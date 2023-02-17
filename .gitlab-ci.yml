@@ -1,0 +1,11 @@
+stages:
+  - ci
+
+image: node
+
+initial:
+  stage: ci
+  script:
+    - yarn
+    - yarn test --watchAll=false
+    - yarn lint && npx stylelint '**/*.{scss,css}'
