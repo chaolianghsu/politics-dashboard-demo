@@ -1,4 +1,4 @@
-import { Typography, Stack } from '@mui/material'
+import { Typography, Stack, Box } from '@mui/material'
 import PropTypes from 'prop-types'
 
 function CardTitle({
@@ -10,9 +10,9 @@ function CardTitle({
         {title}
       </Typography>
       <Stack direction="row" gap="3rem" alignItems="center">
-        <Typography variant="body2" sx={{ color: markColor, fontWeight: 'normal' }}>
+        <Box sx={{ color: markColor, fontWeight: 'normal' }}>
           {mark}
-        </Typography>
+        </Box>
         <Typography variant="h4" sx={{ color: 'customBlue.main', fontSize: '2.6rem' }}>
           {subTitle}
         </Typography>

@@ -25,13 +25,13 @@ function Card({
           position: 'absolute',
           top: '0',
           left: '0',
-          height: '9rem',
-          width: '9rem',
+          height: '8rem',
+          width: '8rem',
           background: linearBg,
           borderRadius: '3px 3px 85px',
         }}
       >
-        <Box sx={{ marginTop: '1.2rem', marginLeft: '1.2rem' }}>{icon}</Box>
+        <Box sx={{ marginTop: '1rem', marginLeft: '1rem' }}>{icon}</Box>
       </Box>
       <CardHeader
         title={(

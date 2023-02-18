@@ -81,7 +81,7 @@ function DashboardLayout() {
           mt: `${topBarHeight}px`,
           transition: `${duration / 1000}s`,
           overflowY: 'scroll',
-          height: '100%',
+          height: `calc(100% - ${topBarHeight}px)`,
         }}
         id="outlet"
       >
