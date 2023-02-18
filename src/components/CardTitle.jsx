@@ -24,7 +24,7 @@ function CardTitle({
 CardTitle.propTypes = {
   title: PropTypes.string,
   subTitle: PropTypes.string,
-  mark: PropTypes.string,
+  mark: PropTypes.oneOfType([PropTypes.string, PropTypes.node]),
   markColor: PropTypes.string,
 }
 
