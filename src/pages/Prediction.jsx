@@ -8,7 +8,7 @@ import KMDImg from '@/assets/pa01.png'
 
 function Prediction() {
   return (
-    <Stack spacing={2}>
+    <Stack spacing={2} sx={{ paddingBottom: '5rem' }}>
       <HeaderBar
         text="最新當選率預測"
         note="預測更新期間：2023/01/18 ~ 2023/02/17"
