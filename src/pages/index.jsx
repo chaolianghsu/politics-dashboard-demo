@@ -1,2 +1,5 @@
 export { default as Prediction } from './Prediction'
 export { default as Reputation } from './Reputation'
+export { default as Spread } from './Spread'
+export { default as Volume } from './Volume'
+export { default as Favorability } from './Favorability'
