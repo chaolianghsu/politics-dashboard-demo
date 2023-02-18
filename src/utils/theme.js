@@ -50,7 +50,7 @@ const theme = createTheme({
   },
   palette: {
     background: {
-      default: '#8B9DAF',
+      default: '#EEEEEE',
     },
     customDeepBlue: {
       main: '#4C607E',

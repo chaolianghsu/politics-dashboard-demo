@@ -86,7 +86,7 @@ function DashboardLayout() {
         id="outlet"
       >
         <Box sx={{
-          marginTop: '-3.4rem',
+          marginTop: '3.4rem',
           padding: {
             xs: '0 4px',
             sm: '0 16px',
