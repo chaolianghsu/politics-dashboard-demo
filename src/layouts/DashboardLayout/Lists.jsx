@@ -55,8 +55,8 @@ function Lists() {
             style={{
               flexGrow: '1',
               textDecoration: 'none',
-              minHeight: '19.5vh',
-              maxHeight: '20vh',
+              minHeight: '15vh',
+              maxHeight: '18vh',
             }}
             to={id}
           >

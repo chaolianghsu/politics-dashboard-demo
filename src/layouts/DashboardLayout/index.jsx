@@ -7,7 +7,7 @@ import AppBar from './AppBar'
 import Logo from './Logo'
 import Lists from './Lists'
 
-const staticDrawerWidth = 240
+const staticDrawerWidth = 180
 const topBarHeight = 54
 const duration = 350
 

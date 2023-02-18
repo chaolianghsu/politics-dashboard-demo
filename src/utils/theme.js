@@ -68,6 +68,7 @@ const theme = createTheme({
     },
     customRed: {
       main: '#FF8373',
+      dark: '#d50000',
     },
     customWhite: {
       main: '#ffffff',
