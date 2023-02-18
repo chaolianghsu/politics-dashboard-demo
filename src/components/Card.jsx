@@ -1,5 +1,9 @@
 import {
-  Card as MuiCard, CardHeader, CardContent, Stack, Box,
+  Card as MuiCard,
+  CardHeader,
+  CardContent,
+  Stack,
+  Box,
 } from '@mui/material'
 import PropTypes from 'prop-types'
 
@@ -16,29 +20,31 @@ function Card({
       }}
       {...others}
     >
-      <Box sx={{
-        position: 'absolute',
-        top: '0',
-        left: '0',
-        height: '9rem',
-        width: '9rem',
-        background: linearBg,
-        borderRadius: '3px 3px 85px',
-      }}
+      <Box
+        sx={{
+          position: 'absolute',
+          top: '0',
+          left: '0',
+          height: '9rem',
+          width: '9rem',
+          background: linearBg,
+          borderRadius: '3px 3px 85px',
+        }}
       >
-        <Box sx={{ marginTop: '1.2rem', marginLeft: '1.2rem' }}>
-          {icon}
-        </Box>
+        <Box sx={{ marginTop: '1.2rem', marginLeft: '1.2rem' }}>{icon}</Box>
       </Box>
       <CardHeader
         title={(
-          <Stack direction="row" sx={{ height: '100%', justifyContent: 'flex-end' }}>
+          <Stack
+            direction="row"
+            sx={{ height: '100%', justifyContent: 'flex-end' }}
+          >
             {title}
           </Stack>
         )}
         sx={{ marginTop: '-0.5rem' }}
       />
-      <CardContent>{children}</CardContent>
+      <CardContent sx={{ padding: '0 0.5rem' }}>{children}</CardContent>
     </MuiCard>
   )
 }

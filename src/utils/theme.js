@@ -73,6 +73,9 @@ const theme = createTheme({
     customWhite: {
       main: '#ffffff',
     },
+    customGreen: {
+      main: '#00CC27',
+    },
   },
   components: {
     MuiCssBaseline: {
