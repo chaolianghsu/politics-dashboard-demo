@@ -1,4 +1,6 @@
-import { LineChart, BarChart, ColChart } from '@/components/charts'
+import {
+  LineChart, BarChart, ColChart, RadarChart,
+} from '@/components/charts'
 import { Box } from '@mui/material'
 
 const fakeData = {
@@ -26,7 +28,7 @@ const fakeData = {
 
 function Demo() {
   return (
-    <Box sx={{ height: '150vh' }}>
+    <Box sx={{ height: '200vh' }}>
       <LineChart
         categories={fakeData.date}
         series={fakeData.data.map((d) => ({
@@ -53,6 +55,13 @@ function Demo() {
             ],
           },
         ]}
+      />
+      <RadarChart
+        categories={['大心', '哈', '哇', '嗚', '怒']}
+        series={[{
+          name: '',
+          data: [14, 20, 133, 30, 52],
+        }]}
       />
     </Box>
   )
