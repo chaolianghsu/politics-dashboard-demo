@@ -11,6 +11,7 @@ const genWordCloudChartOption = ({ data }) => ({
       },
       style: { fontFamily: '微軟正黑體' },
       maxFontSize: 50,
+      spiral: 'archimedean',
     },
   ],
   tooltip: {
