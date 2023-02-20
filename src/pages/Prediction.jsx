@@ -1,6 +1,8 @@
+import { PredictionCardGrid } from '@/containers/prediction'
+
 function Prediction() {
   return (
-    <div>Prediction</div>
+    <PredictionCardGrid />
   )
 }
 

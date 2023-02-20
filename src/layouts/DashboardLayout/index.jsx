@@ -7,7 +7,7 @@ import AppBar from './AppBar'
 import Logo from './Logo'
 import Lists from './Lists'
 
-const staticDrawerWidth = 240
+const staticDrawerWidth = 180
 const topBarHeight = 54
 const duration = 350
 
@@ -86,7 +86,7 @@ function DashboardLayout() {
         id="outlet"
       >
         <Box sx={{
-          marginTop: '-3.4rem',
+          marginTop: '3.4rem',
           padding: {
             xs: '0 4px',
             sm: '0 16px',
