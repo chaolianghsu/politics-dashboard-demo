@@ -44,6 +44,11 @@ const genBarChartOption = ({ categories, series }) => ({
     numericSymbols: null,
     thousandsSep: ',',
   },
+  tooltip: {
+    formatter() {
+      return `${this.key}<br/>筆數: <b>${this.y.toLocaleString()}</b>`
+    },
+  },
 })
 
 export default genBarChartOption

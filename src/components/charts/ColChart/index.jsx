@@ -3,9 +3,9 @@ import HighchartsReact from 'highcharts-react-official'
 import { Box } from '@mui/material'
 import PropTypes from 'prop-types'
 
-import genBarChartOption from './genBarChartOption'
+import genColChartOption from './genColChartOption'
 
-const BarChartPropTypes = {
+const ColChartPropTypes = {
   categories: PropTypes.arrayOf(PropTypes.string),
   series: PropTypes.arrayOf(
     PropTypes.shape({
@@ -13,13 +13,13 @@ const BarChartPropTypes = {
       data: PropTypes.arrayOf(
         PropTypes.oneOfType([PropTypes.number, PropTypes.shape({})]),
       ),
-      color: PropTypes.string,
+      colorByPoint: PropTypes.bool,
     }),
   ),
   chartContainerProps: PropTypes.shape({}),
 }
 
-function BarChart({
+function ColChart({
   categories,
   series,
   chartContainerProps,
@@ -28,7 +28,7 @@ function BarChart({
     <Box {...chartContainerProps}>
       <HighchartsReact
         highcharts={Highcharts}
-        options={genBarChartOption({
+        options={genColChartOption({
           categories,
           series,
         })}
@@ -37,6 +37,6 @@ function BarChart({
   )
 }
 
-BarChart.propTypes = BarChartPropTypes
+ColChart.propTypes = ColChartPropTypes
 
-export default BarChart
+export default ColChart
