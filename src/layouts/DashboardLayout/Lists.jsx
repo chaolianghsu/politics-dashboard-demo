@@ -30,7 +30,17 @@ export const navItems = [
     label: '聲譽模組',
     getIcon: (color) => <EqualizerIcon sx={{ fontSize: 65, color }} />,
   },
-]
+  {
+    id: 'demo',
+    label: 'Demo page',
+    getIcon: (color) => <EqualizerIcon sx={{ fontSize: 65, color }} />,
+  },
+].filter((conf) => {
+  if (process.env.NODE_ENV === 'development') {
+    return true
+  }
+  return conf.id !== 'demo'
+})
 
 function Lists() {
   const currentLocation = useLocation().pathname.split('/')[1]
