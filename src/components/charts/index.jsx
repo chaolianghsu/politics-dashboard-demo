@@ -1,2 +1,2 @@
-// eslint-disable-next-line import/prefer-default-export
 export { default as LineChart } from './LineChart'
+export { default as BarChart } from './BarChart'

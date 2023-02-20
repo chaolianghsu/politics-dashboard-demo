@@ -1,4 +1,4 @@
-import { LineChart } from '@/components/charts'
+import { LineChart, BarChart } from '@/components/charts'
 
 const fakeData = {
   date: [
@@ -33,13 +33,24 @@ const fakeData = {
 
 function Demo() {
   return (
-    <LineChart
-      categories={fakeData.date}
-      series={fakeData.data.map((d) => ({
-        name: d.tn,
-        data: d.g,
-      }))}
-    />
+    <>
+      <LineChart
+        categories={fakeData.date}
+        series={fakeData.data.map((d) => ({
+          name: d.tn,
+          data: d.g,
+        }))}
+      />
+      <BarChart
+        categories={fakeData.date}
+        series={fakeData.data.map((d) => ({
+          name: d.tn,
+          data: d.g,
+          color: '#8E9EE3',
+        }))}
+      />
+
+    </>
   )
 }
 
