@@ -11,7 +11,7 @@ function PredictionCardGrid() {
   return (
     <Grid container spacing={1}>
       {contentConfig.map((cardContent) => (
-        <Grid xs={12} md={6} lg={3} key={cardContent.title} sx={{ display: 'flex' }}>
+        <Grid xs={12} md={6} lg={3} key={cardContent.title} sx={{ display: 'flex', cursor: 'pointer' }}>
           <Card
             sx={{ width: '100%' }}
             title={(
