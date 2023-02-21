@@ -17,6 +17,7 @@
     "@emotion/styled": "^11.10.5",
     "@mui/icons-material": "^5.11.9",
     "@mui/material": "^5.11.9",
+    "@mui/x-data-grid": "^5.17.24",
     "@vitejs/plugin-react": "^2.0.0",
     "axios": "^0.27.2",
     "date-fns": "^2.29.3",
