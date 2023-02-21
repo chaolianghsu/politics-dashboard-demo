@@ -1,6 +1,6 @@
 import {
-  LineChart, BarChart, ColChart, RadarChart, WordCloudChart,
-} from '@/components/charts'
+  LineChart, BarChart, ColChart, RadarChart, WordCloudChart, DataGrid,
+} from '@/components'
 import { Box } from '@mui/material'
 
 const fakeData = {
@@ -349,9 +349,24 @@ const fakeWordCloud = [
   },
 ]
 
+const randomRows = [...new Array(10)].map(() => ({
+  id: Math.random(),
+  col1: Math.random(),
+  col2: Math.random(),
+}))
+
+const columns = [
+  {
+    field: 'col1', headerName: 'Column 1', width: 150, sortable: false, flex: 1,
+  },
+  {
+    field: 'col2', headerName: 'Column 2', width: 150, sortable: false,
+  },
+]
+
 function Demo() {
   return (
-    <Box sx={{ height: '250vh' }}>
+    <Box sx={{ height: '500vh' }}>
       <LineChart
         categories={fakeData.date}
         series={fakeData.data.map((d) => ({
@@ -387,6 +402,12 @@ function Demo() {
         }]}
       />
       <WordCloudChart data={fakeWordCloud.map((d) => ({ name: d.name, weight: d.value }))} />
+      <Box sx={{
+        height: '50rem', width: '100%', backgroundColor: 'customWhite.main', padding: '1rem',
+      }}
+      >
+        <DataGrid rows={randomRows} columns={columns} disableSelectionOnClick hideFooter />
+      </Box>
     </Box>
   )
 }
