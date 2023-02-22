@@ -13,7 +13,7 @@ import {
 } from './handlers'
 
 // eslint-disable-next-line import/prefer-default-export
-export const server = setupWorker(
+export const worker = setupWorker(
   ...diffustionAPIs,
   ...favorabilityAPIs,
   ...hotkeywordAPIs,
