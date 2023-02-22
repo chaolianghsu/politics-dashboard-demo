@@ -1,6 +1,6 @@
 import { Outlet } from 'react-router-dom'
 import {
-  Drawer, Box, useTheme, useMediaQuery,
+  Drawer, Box, useTheme, useMediaQuery, Typography, Stack,
 } from '@mui/material'
 import { useState } from 'react'
 import AppBar from './AppBar'
@@ -75,13 +75,13 @@ function DashboardLayout() {
           <Lists />
         </Drawer>
       </Box>
-      <Box
+      <Stack
         sx={{
           ml: drawerOpen ? `${drawerWidth}px` : 0,
           mt: `${topBarHeight}px`,
           transition: `${duration / 1000}s`,
           overflowY: 'scroll',
-          height: '100%',
+          height: `calc(100% - ${topBarHeight}px)`,
         }}
         id="outlet"
       >
@@ -97,7 +97,18 @@ function DashboardLayout() {
         >
           <Outlet />
         </Box>
-      </Box>
+        <Box sx={{
+          textAlign: 'center', mt: 'auto', color: 'customGray.light', pb: '2.5rem',
+        }}
+        >
+          <Typography variant="body2" sx={{ fontSize: '1.4rem', fontWeight: 'normal' }}>
+            Copyright © 2023 大數據股份有限公司
+          </Typography>
+          <Typography variant="body2" sx={{ fontSize: '1.4rem', fontWeight: 'normal' }}>
+            All rights reserved
+          </Typography>
+        </Box>
+      </Stack>
     </>
   )
 }
