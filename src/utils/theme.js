@@ -62,6 +62,7 @@ const theme = createTheme({
     },
     customBlue: {
       main: '#55D8FE',
+      dark: '#2C3A74',
     },
     customYellow: {
       main: '#FFDA83',

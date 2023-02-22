@@ -10,7 +10,7 @@ function CardTitle({
         {title}
       </Typography>
       <Stack direction="row" gap="3rem" alignItems="center">
-        <Box variant="body2" sx={{ color: markColor, fontWeight: 'normal' }}>
+        <Box sx={{ color: markColor, fontWeight: 'normal' }}>
           {mark}
         </Box>
         <Typography variant="h4" sx={{ color: 'customBlue.main', fontSize: '2.6rem' }}>
