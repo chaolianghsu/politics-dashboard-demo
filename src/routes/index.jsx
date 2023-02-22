@@ -13,11 +13,13 @@ function Routers() {
         <Route path="/" element={<DashboardLayout />}>
           <Route index element={<Navigate to="/prediction" replace />} />
           <Route path="prediction" element={<Prediction />} />
-          <Route path="reputation" element={<Reputation />} />
           <Route path="demo" element={<Demo />} />
-          <Route path="reputation/spread" element={<Spread />} />
-          <Route path="reputation/volume" element={<Volume />} />
-          <Route path="reputation/favorability" element={<Favorability />} />
+          <Route path="reputation">
+            <Route index element={<Reputation />} />
+            <Route path="spread" element={<Spread />} />
+            <Route path="volume" element={<Volume />} />
+            <Route path="favorability" element={<Favorability />} />
+          </Route>
           <Route path="*" element={<Navigate to="/prediction" />} />
         </Route>
       </Routes>
