@@ -3,7 +3,7 @@ import {
 } from 'react-router-dom'
 import { DashboardLayout } from '@/layouts'
 import {
-  Reputation, Prediction, Favorability, Volume, Spread,
+  Reputation, Prediction, Demo, Favorability, Volume, Spread,
 } from '@/pages'
 
 function Routers() {
@@ -14,6 +14,7 @@ function Routers() {
           <Route index element={<Navigate to="/prediction" replace />} />
           <Route path="prediction" element={<Prediction />} />
           <Route path="reputation" element={<Reputation />} />
+          <Route path="demo" element={<Demo />} />
           <Route path="reputation/spread" element={<Spread />} />
           <Route path="reputation/volume" element={<Volume />} />
           <Route path="reputation/favorability" element={<Favorability />} />
