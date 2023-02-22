@@ -1,12 +1,11 @@
-import TrackChangesIcon from '@mui/icons-material/TrackChanges'
 import { Stack, Typography } from '@mui/material'
 import PropTypes from 'prop-types'
 
-function HeaderBar({ text, note }) {
+function HeaderBar({ text, note, icon }) {
   return (
     <Stack direction="row" alignItems="center" flexWrap="wrap" gap="1rem" marginX="0.5rem">
       <Stack direction="row" gap="0.5rem" alignItems="center" marginRight="auto">
-        <TrackChangesIcon sx={{ fontSize: '3rem' }} />
+        {icon}
         <Typography
           variant="h4"
           color="customGray.main"
@@ -29,6 +28,7 @@ function HeaderBar({ text, note }) {
 HeaderBar.propTypes = {
   text: PropTypes.string,
   note: PropTypes.string,
+  icon: PropTypes.node,
 }
 
 export default HeaderBar
