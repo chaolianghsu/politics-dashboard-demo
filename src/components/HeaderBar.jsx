@@ -27,7 +27,7 @@ function HeaderBar({ text, note, icon }) {
 
 HeaderBar.propTypes = {
   text: PropTypes.string,
-  note: PropTypes.string,
+  note: PropTypes.oneOfType([PropTypes.string, PropTypes.node]),
   icon: PropTypes.node,
 }
 

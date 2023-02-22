@@ -20,6 +20,7 @@ function Card({
       }}
       {...others}
     >
+      {icon && (
       <Box
         sx={{
           position: 'absolute',
@@ -33,11 +34,12 @@ function Card({
       >
         <Box sx={{ marginTop: '1rem', marginLeft: '1rem' }}>{icon}</Box>
       </Box>
+      )}
       <CardHeader
         title={(
           <Stack
             direction="row"
-            sx={{ height: '100%', justifyContent: 'flex-end' }}
+            sx={{ height: '100%', justifyContent: icon && 'flex-end' }}
           >
             {title}
           </Stack>
