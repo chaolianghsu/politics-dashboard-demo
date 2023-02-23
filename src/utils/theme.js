@@ -80,6 +80,9 @@ const theme = createTheme({
     customGreen: {
       main: '#00CC27',
     },
+    customLightBlue: {
+      main: '#1BFBE4',
+    },
   },
   components: {
     MuiCssBaseline: {
