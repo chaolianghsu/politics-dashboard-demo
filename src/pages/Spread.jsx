@@ -12,7 +12,7 @@ function Spread() {
   return (
     <Stack spacing={2} sx={{ paddingBottom: '5rem' }}>
       <HeaderBar
-        text="聲譽模組 / 網路聲量"
+        text="聲譽模組 / 網路散播力"
         note={(
           <BlueButton
             onClick={() => { navigate('/reputation') }}
