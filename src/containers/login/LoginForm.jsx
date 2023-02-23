@@ -2,20 +2,38 @@ import { useState, useRef } from 'react'
 import {
   TextField, Stack, Button, Typography, Box,
 } from '@mui/material'
+import { useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import ReCAPTCHA from 'react-google-recaptcha'
+import { useMutation } from '@tanstack/react-query'
 
+import { axiosInstance } from '@/apis'
+import { getToken } from '@/apis/source/auth'
 import LogoLoginImg from '@/assets/logo-login.png'
 
 function LoginForm() {
   const [isRobot, setIsRobot] = useState(true)
-
+  const navigate = useNavigate()
   const recaptchaRef = useRef(null)
-
   const { register, handleSubmit, formState: { errors, isSubmitted } } = useForm()
 
-  const handleOnReCaptchChange = () => {
+  const { mutate } = useMutation({
+    mutationFn: getToken,
+    onSuccess: (res) => {
+      const { access, refresh } = res
+      localStorage.setItem('politics_access', access)
+      localStorage.setItem('politics_refresh', refresh)
+      axiosInstance.defaults.headers.common.Authorization = `Bearer ${access}`
+      navigate('/reputation')
+    },
+  })
+
+  const handleOnRecaptchChange = () => {
     setIsRobot(false)
+  }
+
+  const onSubmit = (d) => {
+    mutate({ email: d.account, password: d.password })
   }
 
   return (
@@ -42,7 +60,7 @@ function LoginForm() {
         spacing={3}
         textAlign="center"
         component="form"
-        onSubmit={handleSubmit(console.log)}
+        onSubmit={handleSubmit(onSubmit)}
       >
         <TextField
           name="account"
@@ -67,7 +85,7 @@ function LoginForm() {
         />
         <Box sx={{ '&>div': { width: '100%' } }}>
           <ReCAPTCHA
-            onChange={handleOnReCaptchChange}
+            onChange={handleOnRecaptchChange}
             ref={recaptchaRef}
             sitekey="6LcP1KckAAAAADlDotybpQJI2Ouzp8uj1jMffpS3"
             hl="zh-TW"

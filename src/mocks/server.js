@@ -10,6 +10,7 @@ import {
   socialAPIs,
   textlistAPIs,
   volumeAPIs,
+  authAPIs,
 } from './handlers'
 
 // eslint-disable-next-line import/prefer-default-export
@@ -24,4 +25,5 @@ export const server = setupServer(
   ...socialAPIs,
   ...textlistAPIs,
   ...volumeAPIs,
+  ...authAPIs,
 )
