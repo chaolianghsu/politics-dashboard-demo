@@ -3,7 +3,7 @@ import {
 } from 'react-router-dom'
 import { DashboardLayout } from '@/layouts'
 import {
-  Reputation, Prediction, Demo, Favorability, Volume, Spread,
+  Reputation, Prediction, Demo, Favorability, Volume, Spread, Login,
 } from '@/pages'
 
 function Routers() {
@@ -22,6 +22,7 @@ function Routers() {
           </Route>
           <Route path="*" element={<Navigate to="/prediction" />} />
         </Route>
+        <Route path="login" element={<Login />} />
       </Routes>
     </BrowserRouter>
   )
