@@ -24,13 +24,13 @@ function LoginForm() {
       justifyContent="center"
       sx={{ marginX: 'auto', width: '26rem' }}
     >
-      <Box sx={{ width: '26rem' }}>
+      <Box sx={{ width: '23rem' }}>
         <img src={LogoLoginImg} alt="logo-login" style={{ width: '100%' }} />
       </Box>
       <Typography
         sx={{
           color: 'customGray.light',
-          fontSize: '1.8rem',
+          fontSize: '1.6rem',
           fontWeight: 'normal',
         }}
         variant="h5"
