@@ -26,6 +26,7 @@ import {
 import { zhTW } from 'react-date-range/src/locale'
 import { createStaticRanges } from 'react-date-range'
 import { shallow } from 'zustand/shallow'
+import { useNavigate } from 'react-router-dom'
 import StyledDateRangePicker from './StyledDateRangePicker'
 
 import 'react-date-range/dist/styles.css'
@@ -37,6 +38,8 @@ function AppBar({
 }) {
   const [userButtonAnchorEl, setUserButtonAnchorEl] = useState(null)
   const [datePickerAnchorEl, setDatePickerAnchorEl] = useState(null)
+  const navigate = useNavigate()
+
   const handleClick = (event) => {
     setDatePickerAnchorEl(event.currentTarget)
   }
@@ -99,10 +102,10 @@ function AppBar({
     setUserButtonAnchorEl(null)
   }
   const handleOnLogout = () => {
-    // localStorage.removeItem('token')
-    // localStorage.removeItem('refreshToken')
-    // handleUserMenuClose()
-    // navigate('/login', { replace: true })
+    localStorage.removeItem('politics_access')
+    localStorage.removeItem('politics_refresh')
+    handleUserMenuClose()
+    navigate('/login', { replace: true, state: { fromLogout: true } })
   }
   const handleQueryDateOnChange = () => {
     updateDate({ startDate: dateState.startDate, endDate: dateState.endDate })

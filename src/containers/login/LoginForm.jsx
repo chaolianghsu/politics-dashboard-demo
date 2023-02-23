@@ -2,7 +2,7 @@ import { useState, useRef } from 'react'
 import {
   TextField, Stack, Button, Typography, Box,
 } from '@mui/material'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import ReCAPTCHA from 'react-google-recaptcha'
 import { useMutation } from '@tanstack/react-query'
@@ -13,9 +13,15 @@ import LogoLoginImg from '@/assets/logo-login.png'
 
 function LoginForm() {
   const [isRobot, setIsRobot] = useState(true)
+  const { state } = useLocation()
   const navigate = useNavigate()
   const recaptchaRef = useRef(null)
-  const { register, handleSubmit, formState: { errors, isSubmitted } } = useForm()
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitted },
+  } = useForm()
 
   const { mutate } = useMutation({
     mutationFn: getToken,
@@ -33,6 +39,7 @@ function LoginForm() {
   }
 
   const onSubmit = (d) => {
+    if (!state?.fromLogout && isRobot) return
     mutate({ email: d.account, password: d.password })
   }
 
@@ -90,10 +97,12 @@ function LoginForm() {
             sitekey="6LcP1KckAAAAADlDotybpQJI2Ouzp8uj1jMffpS3"
             hl="zh-TW"
           />
-          {(isSubmitted && isRobot) && (
-          <Typography sx={{ textAlign: 'left', fontSize: '1.2rem', color: '#d32f2f' }}>
-            請進行驗證
-          </Typography>
+          {isSubmitted && isRobot && !state?.fromLogout && (
+            <Typography
+              sx={{ textAlign: 'left', fontSize: '1.2rem', color: '#d32f2f' }}
+            >
+              請進行驗證
+            </Typography>
           )}
         </Box>
         <Button
