@@ -52,6 +52,9 @@ const theme = createTheme({
     background: {
       default: '#EEEEEE',
     },
+    customPurple: {
+      main: '#934DFC',
+    },
     customDeepBlue: {
       main: '#4C607E',
       light: '#36465f',

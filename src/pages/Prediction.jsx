@@ -1,9 +1,10 @@
 import {
   Stack, Avatar, Typography,
 } from '@mui/material'
+import TrackChangesIcon from '@mui/icons-material/TrackChanges'
 
-import { PredictionCardGrid, HeaderBar } from '@/containers/prediction'
-
+import { PredictionCardGrid } from '@/containers/prediction'
+import { HeaderBar } from '@/components'
 import KMDImg from '@/assets/pa01.png'
 
 function Prediction() {
@@ -12,6 +13,7 @@ function Prediction() {
       <HeaderBar
         text="最新當選率預測"
         note="預測更新期間：2023/01/18 ~ 2023/02/17"
+        icon={<TrackChangesIcon sx={{ fontSize: '3rem' }} />}
       />
       <Stack alignItems="center" sx={{ width: '100%', color: 'customBlue.dark' }}>
         <Avatar
@@ -29,6 +31,7 @@ function Prediction() {
       <HeaderBar
         text="羅智強 指標儀表板"
         note="數據調查期間：2023/01/18 ~ 2023/02/17"
+        icon={<TrackChangesIcon sx={{ fontSize: '3rem' }} />}
       />
       <PredictionCardGrid />
     </Stack>
