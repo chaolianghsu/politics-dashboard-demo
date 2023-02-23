@@ -1,31 +1,36 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import {
   TextField, Stack, Button, Typography, Box,
 } from '@mui/material'
+import ReCAPTCHA from 'react-google-recaptcha'
 
 import LogoLoginImg from '@/assets/logo-login.png'
 
 function LoginForm() {
   const [formInfo, setFormInfo] = useState({ account: '', password: '' })
-
+  const [isRobot, setIsRobot] = useState(false)
+  const recaptchaRef = useRef(null)
   const handleChange = (e) => {
     setFormInfo((prev) => ({ ...prev, [e.target.name]: e.target.value }))
   }
 
   const handleLogin = () => {
-    console.log(formInfo)
+    console.log(formInfo, isRobot)
+  }
+
+  const handleOnReCaptchChange = () => {
+    setIsRobot(false)
   }
 
   return (
     <Stack
       alignItems="center"
       justifyContent="center"
-      sx={{ marginX: 'auto' }}
+      sx={{ marginX: 'auto', width: '26rem' }}
     >
       <Box sx={{ width: '26rem' }}>
         <img src={LogoLoginImg} alt="logo-login" style={{ width: '100%' }} />
       </Box>
-
       <Typography
         sx={{
           color: 'customGray.light',
@@ -36,14 +41,42 @@ function LoginForm() {
       >
         歡迎回來！請登入您的帳號密碼
       </Typography>
-      <Stack sx={{ marginY: '5rem', width: '36rem' }} spacing={3}>
-        <TextField name="account" onChange={handleChange} label="帳號" variant="standard" color="customGray" />
-        <TextField name="password" onChange={handleChange} label="密碼" variant="standard" color="customGray" />
+      <Stack sx={{ marginY: '5rem' }} spacing={3} textAlign="center" component="form">
+        <TextField
+          name="account"
+          fullWidth
+          onChange={handleChange}
+          label="帳號"
+          variant="standard"
+          color="customGray"
+          required
+        />
+        <TextField
+          name="password"
+          fullWidth
+          onChange={handleChange}
+          label="密碼"
+          variant="standard"
+          color="customGray"
+          type="password"
+          required
+        />
+        <Box sx={{ '&>div': { width: '100%' } }}>
+          <ReCAPTCHA
+            onChange={handleOnReCaptchChange}
+            ref={recaptchaRef}
+            sitekey="6LcP1KckAAAAADlDotybpQJI2Ouzp8uj1jMffpS3"
+            hl="zh-TW"
+          />
+        </Box>
         <Button
           onClick={handleLogin}
           variant="contained"
           sx={{
-            backgroundColor: '#4c607e', width: '100%', padding: '1rem', fontWeight: 'bold',
+            backgroundColor: '#4c607e',
+            width: '100%',
+            padding: '1rem',
+            fontWeight: 'bold',
           }}
         >
           登入
