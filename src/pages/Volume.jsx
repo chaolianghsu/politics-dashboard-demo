@@ -4,7 +4,8 @@ import EqualizerIcon from '@mui/icons-material/Equalizer'
 import ReplyIcon from '@mui/icons-material/Reply'
 
 import { HeaderBar, BlueButton } from '@/components'
-import { VolumeTrendCard, PostListCard } from '@/containers/volume'
+import { VolumeTrendCard } from '@/containers/volume'
+import { PostListCard } from '@/containers'
 
 function Volume() {
   const navigate = useNavigate()
