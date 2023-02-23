@@ -2,21 +2,17 @@ import { useState, useRef } from 'react'
 import {
   TextField, Stack, Button, Typography, Box,
 } from '@mui/material'
+import { useForm } from 'react-hook-form'
 import ReCAPTCHA from 'react-google-recaptcha'
 
 import LogoLoginImg from '@/assets/logo-login.png'
 
 function LoginForm() {
-  const [formInfo, setFormInfo] = useState({ account: '', password: '' })
-  const [isRobot, setIsRobot] = useState(false)
-  const recaptchaRef = useRef(null)
-  const handleChange = (e) => {
-    setFormInfo((prev) => ({ ...prev, [e.target.name]: e.target.value }))
-  }
+  const [isRobot, setIsRobot] = useState(true)
 
-  const handleLogin = () => {
-    console.log(formInfo, isRobot)
-  }
+  const recaptchaRef = useRef(null)
+
+  const { register, handleSubmit, formState: { errors, isSubmitted } } = useForm()
 
   const handleOnReCaptchChange = () => {
     setIsRobot(false)
@@ -41,25 +37,33 @@ function LoginForm() {
       >
         歡迎回來！請登入您的帳號密碼
       </Typography>
-      <Stack sx={{ marginY: '5rem' }} spacing={3} textAlign="center" component="form">
+      <Stack
+        sx={{ marginY: '5rem' }}
+        spacing={3}
+        textAlign="center"
+        component="form"
+        onSubmit={handleSubmit(console.log)}
+      >
         <TextField
           name="account"
           fullWidth
-          onChange={handleChange}
           label="帳號"
           variant="standard"
           color="customGray"
-          required
+          error={!!errors.account}
+          helperText={errors.account?.message}
+          {...register('account', { required: '請輸入帳號' })}
         />
         <TextField
           name="password"
           fullWidth
-          onChange={handleChange}
           label="密碼"
           variant="standard"
           color="customGray"
           type="password"
-          required
+          error={!!errors.account}
+          helperText={errors.account?.message}
+          {...register('password', { required: '請輸入密碼' })}
         />
         <Box sx={{ '&>div': { width: '100%' } }}>
           <ReCAPTCHA
@@ -68,9 +72,13 @@ function LoginForm() {
             sitekey="6LcP1KckAAAAADlDotybpQJI2Ouzp8uj1jMffpS3"
             hl="zh-TW"
           />
+          {(isSubmitted && isRobot) && (
+          <Typography sx={{ textAlign: 'left', fontSize: '1.2rem', color: '#d32f2f' }}>
+            請進行驗證
+          </Typography>
+          )}
         </Box>
         <Button
-          onClick={handleLogin}
           variant="contained"
           sx={{
             backgroundColor: '#4c607e',
@@ -78,6 +86,7 @@ function LoginForm() {
             padding: '1rem',
             fontWeight: 'bold',
           }}
+          type="submit"
         >
           登入
         </Button>
