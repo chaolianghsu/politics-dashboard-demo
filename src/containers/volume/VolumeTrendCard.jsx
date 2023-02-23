@@ -27,7 +27,7 @@ const fakeData = {
 function VolumeTrendCard() {
   return (
     <Card
-      title={<TitleData markNumber={markNumber} />}
+      title={<TitleData title="網路聲量" markNumber={markNumber} unit="percentage" />}
     >
       <CardContent sx={{
         marginLeft: '-0.5rem', display: 'flex', flexDirection: 'column', gap: '2rem',
