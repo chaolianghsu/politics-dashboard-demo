@@ -25,10 +25,12 @@ import {
 } from 'date-fns'
 import { zhTW } from 'react-date-range/src/locale'
 import { createStaticRanges } from 'react-date-range'
+import { shallow } from 'zustand/shallow'
 import StyledDateRangePicker from './StyledDateRangePicker'
 
 import 'react-date-range/dist/styles.css'
 import 'react-date-range/dist/theme/default.css'
+import { useGlobalDateStore } from '../../../store'
 
 function AppBar({
   drawerWidth, drawerOpen, toggleDrawer, height,
@@ -38,7 +40,14 @@ function AppBar({
   const handleClick = (event) => {
     setDatePickerAnchorEl(event.currentTarget)
   }
-
+  const { startDate, endDate, updateDate } = useGlobalDateStore(
+    (state) => ({
+      startDate: state.startDate,
+      endDate: state.endDate,
+      updateDate: state.update,
+    }),
+    shallow,
+  )
   const handleClose = () => {
     setDatePickerAnchorEl(null)
   }
@@ -95,6 +104,10 @@ function AppBar({
     // handleUserMenuClose()
     // navigate('/login', { replace: true })
   }
+  const handleQueryDateOnChange = () => {
+    updateDate({ startDate: dateState.startDate, endDate: dateState.endDate })
+    setDatePickerAnchorEl(null)
+  }
 
   return (
     <MuiAppBar
@@ -129,7 +142,7 @@ function AppBar({
               <MenuIcon />
             </IconButton>
             <Box>
-              <Button variant="outlined" color="customGray" onClick={handleClick}>
+              <Button size="small" variant="outlined" color="customGray" onClick={handleClick}>
                 <Box sx={{
                   display: 'flex', alignItems: 'center', width: '100%', color: 'black',
                 }}
@@ -147,10 +160,10 @@ function AppBar({
                   </Typography>
                   <Typography sx={{ fontWeight: '500' }} noWrap>
                     {`${dateFormat(
-                      dateState.startDate.toString(),
+                      startDate.toString(),
                       'yyyy-mm-dd',
                     )} ~ ${dateFormat(
-                      dateState.endDate.toString(),
+                      endDate.toString(),
                       'yyyy-mm-dd',
                     )}`}
                   </Typography>
@@ -182,6 +195,7 @@ function AppBar({
                   <Button
                     size="small"
                     variant="contained"
+                    onClick={handleQueryDateOnChange}
                   >
                     <Typography variant="button" sx={{ color: 'white' }}>
                       查詢
