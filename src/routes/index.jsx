@@ -6,21 +6,25 @@ import {
   Reputation, Prediction, Demo, Favorability, Volume, Spread, Login,
 } from '@/pages'
 
+import PrivateRoutes from './PrivateRoutes'
+
 function Routers() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<DashboardLayout />}>
-          <Route index element={<Navigate to="/prediction" replace />} />
-          <Route path="prediction" element={<Prediction />} />
-          <Route path="demo" element={<Demo />} />
-          <Route path="reputation">
-            <Route index element={<Reputation />} />
-            <Route path="spread" element={<Spread />} />
-            <Route path="volume" element={<Volume />} />
-            <Route path="favorability" element={<Favorability />} />
+        <Route element={<PrivateRoutes />}>
+          <Route path="/" element={<DashboardLayout />}>
+            <Route index element={<Navigate to="/prediction" replace />} />
+            <Route path="prediction" element={<Prediction />} />
+            <Route path="demo" element={<Demo />} />
+            <Route path="reputation">
+              <Route index element={<Reputation />} />
+              <Route path="spread" element={<Spread />} />
+              <Route path="volume" element={<Volume />} />
+              <Route path="favorability" element={<Favorability />} />
+            </Route>
+            <Route path="*" element={<Navigate to="/prediction" />} />
           </Route>
-          <Route path="*" element={<Navigate to="/prediction" />} />
         </Route>
         <Route path="login" element={<Login />} />
       </Routes>

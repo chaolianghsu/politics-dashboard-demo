@@ -1,3 +1,4 @@
+import axios from 'axios'
 import { axiosInstance } from '../axiosInstance'
 
 export const Url = '/token'
@@ -5,7 +6,7 @@ export const tokenVerifyUrl = `${Url}/verify`
 export const tokenRefreshUrl = `${Url}/refresh`
 
 export const getToken = async ({ email, password }) => {
-  const res = await axiosInstance.post(Url, {
+  const res = await axios.post(Url, {
     email,
     password,
   })
@@ -13,7 +14,7 @@ export const getToken = async ({ email, password }) => {
 }
 
 export const verifyToken = async ({ access }) => {
-  const res = await axiosInstance.get(Url, {
+  const res = await axiosInstance.post(tokenVerifyUrl, {
     token: access,
   })
   return res.data
@@ -40,10 +41,10 @@ axiosInstance.interceptors.response.use(
       url: tokenRefreshUrl,
       data: { refresh: localStorage.getItem('politics_refresh') || '' },
     })
-    const data = await res.json()
+    const data = await res.data
     localStorage.setItem('politics_access', data.access)
 
-    axiosInstance.defaults.headers.common.Authorization = `Bearer ${data.access}`
+    axiosInstance.defaults.headers.Authorization = `Bearer ${data.access}`
 
     if (originalReq.url === tokenVerifyUrl) {
       return axiosInstance({

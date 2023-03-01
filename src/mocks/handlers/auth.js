@@ -49,7 +49,7 @@ const authAPIs = [
       const accessToken = genToken(10000)
       return res(
         ctx.status(200),
-        ctx.json({ access_token: accessToken }),
+        ctx.json({ access: accessToken }),
       )
     }
     return res(

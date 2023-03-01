@@ -30,7 +30,7 @@ function LoginForm() {
       localStorage.setItem('politics_access', access)
       localStorage.setItem('politics_refresh', refresh)
       axiosInstance.defaults.headers.common.Authorization = `Bearer ${access}`
-      navigate('/reputation')
+      navigate('/prediction')
     },
   })
 
