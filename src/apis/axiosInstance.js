@@ -8,4 +8,5 @@ export const baseUrl = +process.env.VITE_IS_MOCK_API ? devUrl : testUrl
 
 export const axiosInstance = axios.create({
   baseURL: baseUrl,
+  headers: { Authorization: `Bearer ${localStorage.getItem('politics_access') || ''}` },
 })

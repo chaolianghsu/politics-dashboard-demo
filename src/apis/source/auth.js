@@ -11,17 +11,53 @@ export const getToken = async ({ email, password }) => {
   })
   return res.data
 }
-export const refreshToken = async ({ refresh }) => {
-  const res = await axiosInstance({
-    method: 'post',
-    url: tokenRefreshUrl,
-    data: { refresh },
-  })
-  return res.data
-}
+
 export const verifyToken = async ({ access }) => {
   const res = await axiosInstance.get(Url, {
     token: access,
   })
   return res.data
 }
+
+axiosInstance.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    const statusCode = error.response.status
+    const originalReq = error.config
+
+    if (
+      statusCode !== 401
+      || originalReq.retryFlag
+      || originalReq.url === tokenRefreshUrl
+    ) {
+      return Promise.reject(error)
+    }
+
+    const originalReqAddedRetryFlag = { ...originalReq, retryFlag: true }
+
+    const res = await axiosInstance({
+      method: 'post',
+      url: tokenRefreshUrl,
+      data: { refresh: localStorage.getItem('politics_refresh') || '' },
+    })
+    const data = await res.json()
+    localStorage.setItem('politics_access', data.access)
+
+    axiosInstance.defaults.headers.common.Authorization = `Bearer ${data.access}`
+
+    if (originalReq.url === tokenVerifyUrl) {
+      return axiosInstance({
+        ...originalReqAddedRetryFlag,
+        data: { token: localStorage.getItem('politics_access') || '' },
+      })
+    }
+
+    return axiosInstance({
+      ...originalReqAddedRetryFlag,
+      headers: {
+        ...originalReqAddedRetryFlag.headers,
+        Authorization: localStorage.getItem('politics_access') || '',
+      },
+    })
+  },
+)
