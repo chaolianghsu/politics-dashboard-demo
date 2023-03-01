@@ -1,10 +1,9 @@
 import { rest } from 'msw'
 import { authAPI, baseUrl } from '@/apis'
-
-const Url = `${baseUrl}${authAPI.Url}`
+import { genToken, tokenValidation } from '../utils/token'
 
 const authAPIs = [
-  rest.post(Url, async (req, res, ctx) => {
+  rest.post(`${baseUrl}${authAPI.Url}`, async (req, res, ctx) => {
     const { email, password } = await req.json()
     if (email !== 'admin' || password !== 'admin') {
       return res(
@@ -14,11 +13,49 @@ const authAPIs = [
         }),
       )
     }
+    const accessToken = genToken(10000)
+    const refreshToken = genToken(2592000000)
     return res(
       ctx.status(200),
       ctx.json({
-        refresh: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTY3NzIzMjEwNiwiaWF0IjoxNjc3MTQ1NzA2LCJqdGkiOiI5ZjA2ZWVmMDI1MmE0OTE1YjJkNDYxMjNhNjY4OTFiMyIsInVzZXJfaWQiOjF9.OEeWGTek-UXfFvM0mfoZ_5eYWjuImsDkhffIaq4B-QI',
-        access: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjc3MjMyMTA2LCJpYXQiOjE2NzcxNDU3MDYsImp0aSI6IjliOTViZjliMTk0ZjQ3OGZiYTFlMDlhZGY4YTAwZjAzIiwidXNlcl9pZCI6MX0.tJRxggcnQh6Es_0tIJd7dcTHOxbQ3LNrAHr7WiKps2o',
+        refresh: accessToken,
+        access: refreshToken,
+      }),
+    )
+  }),
+  rest.post(`${baseUrl}${authAPI.tokenVerifyUrl}`, async (req, res, ctx) => {
+    const data = await req.json()
+    const { token } = data
+    const { success, message } = tokenValidation(token)
+    if (success === true) {
+      return res(
+        ctx.status(200),
+        ctx.json({ }),
+      )
+    }
+    return res(
+      ctx.status(401),
+      ctx.json({
+        detail: message,
+      }),
+    )
+  }),
+
+  rest.post(`${baseUrl}${authAPI.tokenRefreshUrl}`, async (req, res, ctx) => {
+    const data = await req.json()
+    const { refresh } = data
+    const { success, message } = tokenValidation(refresh)
+    if (success === true) {
+      const accessToken = genToken(10000)
+      return res(
+        ctx.status(200),
+        ctx.json({ access_token: accessToken }),
+      )
+    }
+    return res(
+      ctx.status(401),
+      ctx.json({
+        detail: message,
       }),
     )
   }),
