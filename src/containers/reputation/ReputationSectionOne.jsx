@@ -225,7 +225,7 @@ function ReputationSectionOne() {
                 },
               }}
             />
-            <DetailButton onClick={() => navigate('/reputation/volume')}>
+            <DetailButton onClick={() => navigate('/reputation/favorability')}>
               詳細資料
             </DetailButton>
           </Stack>
