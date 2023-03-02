@@ -13,6 +13,7 @@ import {
   TitleData,
   LineChart,
   DetailButton,
+  ColChart,
 } from '@/components'
 
 const fakeData = {
@@ -41,10 +42,25 @@ const fakeData = {
 function ReputationSectionOne() {
   const navigate = useNavigate()
 
+  const sentiments = [
+    {
+      name: '正評',
+      value: 770,
+      percent: 18.03,
+      color: '#8E9EE3',
+    },
+    {
+      name: '負評',
+      value: 1491,
+      percent: 18.03,
+      color: '#1BFBE4',
+    },
+  ]
+
   return (
     <Grid container spacing={2}>
       <Grid xs={12} md={4}>
-        <Stack spacing={2}>
+        <Stack spacing={2} sx={{ height: '100%' }}>
           <Card>
             <CardContent>
               <Stack
@@ -90,13 +106,25 @@ function ReputationSectionOne() {
                   value={120}
                   unit="percentage"
                   title="聲譽值"
+                  TitleStackProps={{
+                    spacing: 0,
+                    sx: {
+                      alignItems: { xs: 'end', lg: 'start' },
+                      flexDirection: {
+                        xs: 'row',
+                        lg: 'column',
+                      },
+                      gap: { xs: 2, lg: 0 },
+                    },
+                  }}
                 />
               </Box>
             )}
+            sx={{ flex: '1' }}
           />
         </Stack>
       </Grid>
-      <Grid xs={12} md={8} sx={{ display: 'flex', width: '100%' }}>
+      <Grid xs={12} md={8} lg={4} sx={{ display: 'flex', width: '100%' }}>
         <Card
           title={(
             <Box
@@ -115,25 +143,87 @@ function ReputationSectionOne() {
               />
             </Box>
             )}
-          sx={{ width: '100%' }}
+          sx={{ width: '100%', display: 'flex', flexDirection: 'column' }}
+          CardContentProps={{
+            component: Stack,
+            sx: {
+              flex: '1',
+            },
+          }}
         >
-          <Stack sx={{ marginX: '1rem' }}>
-            <Typography
-              variant="h4"
+          <Typography
+            variant="h4"
+            sx={{
+              color: 'customGray.main',
+              fontSize: '2rem',
+              marginBottom: '0.5rem',
+            }}
+          >
+            聲量趨勢
+          </Typography>
+          <LineChart
+            categories={fakeData.date}
+            series={fakeData.data.map((d) => ({
+              name: d.tn,
+              data: d.g,
+            }))}
+          />
+          <DetailButton onClick={() => navigate('/reputation/volume')} sx={{ marginTop: 'auto' }}>
+            詳細資料
+          </DetailButton>
+        </Card>
+      </Grid>
+      <Grid xs={12} lg={4}>
+        <Card
+          title={(
+            <Box
               sx={{
-                color: 'customGray.main',
-                fontSize: '2rem',
-                marginBottom: '0.5rem',
+                width: '100%',
+                display: 'flex',
+                justifyContent: 'space-between',
+                flexWrap: 'wrap',
               }}
             >
-              聲量趨勢
-            </Typography>
-            <LineChart
-              categories={fakeData.date}
-              series={fakeData.data.map((d) => ({
-                name: d.tn,
-                data: d.g,
-              }))}
+              <TitleData
+                markNumber={10}
+                value={120}
+                unit="percentage"
+                title="好感度"
+              />
+            </Box>
+        )}
+        >
+          <Stack sx={{ marginX: '1rem' }}>
+            {sentiments.map((sen) => (
+              <Stack direction="row" key={sen.name} sx={{ alignItems: 'end' }} spacing={1}>
+                <Typography variant="body2">{sen.name}</Typography>
+                <Typography variant="h4" sx={{ color: sen.color }}>
+                  {sen.value.toLocaleString()}
+                </Typography>
+                <Typography variant="body2">筆</Typography>
+                <Typography variant="body2">
+                  &#40;
+                  {sen.percent}
+                  %&#41;
+                </Typography>
+              </Stack>
+            ))}
+            <ColChart
+              series={[
+                {
+                  name: '筆數',
+                  colorByPoint: true,
+                  data: [
+                    { name: '正評', y: 2323 },
+                    { name: '負評', y: 1122 },
+                  ],
+                },
+              ]}
+              chartContainerProps={{
+                sx: {
+                  marginTop: '2rem',
+                },
+              }}
             />
             <DetailButton onClick={() => navigate('/reputation/volume')}>
               詳細資料
