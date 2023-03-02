@@ -4,10 +4,37 @@ import {
 import TrackChangesIcon from '@mui/icons-material/TrackChanges'
 
 import { PredictionCardGrid } from '@/containers/prediction'
-import { HeaderBar } from '@/components'
+import { HeaderBar, LoadingProgress } from '@/components'
 import KMDImg from '@/assets/pa01.png'
 
+import { useQuery } from '@tanstack/react-query'
+import { shallow } from 'zustand/shallow'
+import { useGlobalDateStore } from '@/store'
+import { predictModuleAPI } from '@/apis'
+import dateFormat from 'dateformat'
+
 function Prediction() {
+  const { startDate, endDate } = useGlobalDateStore(
+    (state) => ({
+      startDate: state.startDate,
+      endDate: state.endDate,
+    }),
+    shallow,
+  )
+
+  const formattedDateStart = dateFormat(startDate, 'yyyymmdd')
+  const formattedDateEnd = dateFormat(endDate, 'yyyymmdd')
+
+  const { data, isLoading, isFetching } = useQuery({
+    queryKey: [predictModuleAPI.Url, formattedDateStart, formattedDateEnd],
+    queryFn: () => predictModuleAPI.getData({ from: formattedDateStart, to: formattedDateEnd }),
+    select: (d) => d.result[0],
+  })
+
+  if (isLoading || isFetching) {
+    return <LoadingProgress />
+  }
+
   return (
     <Stack spacing={2} sx={{ paddingBottom: '5rem' }}>
       <HeaderBar
@@ -33,7 +60,7 @@ function Prediction() {
         note="數據調查期間：2023/01/18 ~ 2023/02/17"
         icon={<TrackChangesIcon sx={{ fontSize: '3rem' }} />}
       />
-      <PredictionCardGrid />
+      <PredictionCardGrid data={data} />
     </Stack>
   )
 }
