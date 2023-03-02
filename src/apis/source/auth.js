@@ -57,7 +57,7 @@ axiosInstance.interceptors.response.use(
       ...originalReqAddedRetryFlag,
       headers: {
         ...originalReqAddedRetryFlag.headers,
-        Authorization: localStorage.getItem('politics_access') || '',
+        Authorization: `Bearer ${localStorage.getItem('politics_access')}` || '',
       },
     })
   },
