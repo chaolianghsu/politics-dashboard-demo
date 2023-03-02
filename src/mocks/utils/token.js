@@ -16,6 +16,8 @@ export const tokenValidation = (token = '') => {
     return { success: false, message: 'Token invalid.' }
   }
 
+  console.log(tokenDecoded[1], Date.now())
+
   if (tokenDecoded[1] <= Date.now()) {
     return { success: false, message: 'Token expired.' }
   }

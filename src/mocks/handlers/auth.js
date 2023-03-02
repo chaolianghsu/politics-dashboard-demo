@@ -18,8 +18,8 @@ const authAPIs = [
     return res(
       ctx.status(200),
       ctx.json({
-        refresh: accessToken,
-        access: refreshToken,
+        refresh: refreshToken,
+        access: accessToken,
       }),
     )
   }),
