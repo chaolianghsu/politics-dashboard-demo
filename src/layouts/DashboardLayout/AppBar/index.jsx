@@ -105,7 +105,7 @@ function AppBar({
     localStorage.removeItem('politics_access')
     localStorage.removeItem('politics_refresh')
     handleUserMenuClose()
-    navigate('/login', { replace: true, state: { fromLogout: true } })
+    navigate('/login', { replace: true })
   }
   const handleQueryDateOnChange = () => {
     updateDate({ startDate: dateState.startDate, endDate: dateState.endDate })

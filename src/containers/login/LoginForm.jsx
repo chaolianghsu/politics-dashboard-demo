@@ -2,7 +2,7 @@ import { useState, useRef } from 'react'
 import {
   TextField, Stack, Button, Typography, Box,
 } from '@mui/material'
-import { useNavigate, useLocation } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import ReCAPTCHA from 'react-google-recaptcha'
 import { useMutation } from '@tanstack/react-query'
@@ -13,7 +13,6 @@ import LogoLoginImg from '@/assets/logo-login.png'
 
 function LoginForm() {
   const [isRobot, setIsRobot] = useState(true)
-  const { state } = useLocation()
   const navigate = useNavigate()
   const recaptchaRef = useRef(null)
 
@@ -30,7 +29,7 @@ function LoginForm() {
       localStorage.setItem('politics_access', access)
       localStorage.setItem('politics_refresh', refresh)
       axiosInstance.defaults.headers.common.Authorization = `Bearer ${access}`
-      navigate('/prediction')
+      navigate('/prediction', { replace: true })
     },
   })
 
@@ -39,7 +38,7 @@ function LoginForm() {
   }
 
   const onSubmit = (d) => {
-    if (!state?.fromLogout && isRobot) return
+    if (isRobot) return
     mutate({ email: d.account, password: d.password })
   }
 
@@ -97,7 +96,7 @@ function LoginForm() {
             sitekey="6LcP1KckAAAAADlDotybpQJI2Ouzp8uj1jMffpS3"
             hl="zh-TW"
           />
-          {isSubmitted && isRobot && !state?.fromLogout && (
+          {isSubmitted && isRobot && (
             <Typography
               sx={{ textAlign: 'left', fontSize: '1.2rem', color: '#d32f2f' }}
             >
