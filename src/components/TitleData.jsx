@@ -14,7 +14,7 @@ const descriptionConfigs = {
   平均互動力: '平均每位經常互動者會有多少互動數。',
 }
 function TitleData({
-  title, value = 8810, markNumber, unit = '',
+  title, value = 8810, markNumber, unit = '', TitleStackProps,
 }) {
   // 單位
   const unitTypesMap = {
@@ -43,7 +43,7 @@ function TitleData({
 
   return (
     <Stack spacing={1}>
-      <Stack direction="row" spacing={2} alignItems="end">
+      <Stack direction="row" spacing={2} alignItems="end" {...TitleStackProps}>
         <Typography
           variant="h4"
           sx={{
@@ -76,6 +76,7 @@ TitleData.propTypes = {
   unit: PropTypes.string,
   title: PropTypes.string,
   value: PropTypes.number,
+  TitleStackProps: PropTypes.shape({}),
 }
 
 export default TitleData
