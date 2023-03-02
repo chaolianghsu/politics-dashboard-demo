@@ -388,7 +388,7 @@ function Demo() {
             name: '筆數',
             colorByPoint: true,
             data: [
-              { name: '正評量', y: 2323 },
+              { name: '正評', y: 2323 },
               { name: '負評', y: 1122 },
             ],
           },

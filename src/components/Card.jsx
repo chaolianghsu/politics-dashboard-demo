@@ -10,7 +10,7 @@ import PropTypes from 'prop-types'
 const linearBg = 'linear-gradient(rgb(35, 99, 219) 0%, rgb(75, 194, 255) 100%)'
 
 function Card({
-  title, children, sx, icon, ...others
+  title, children, sx, icon, CardContentProps, ...others
 }) {
   return (
     <MuiCard
@@ -21,19 +21,19 @@ function Card({
       {...others}
     >
       {icon && (
-      <Box
-        sx={{
-          position: 'absolute',
-          top: '0',
-          left: '0',
-          height: '8rem',
-          width: '8rem',
-          background: linearBg,
-          borderRadius: '3px 3px 85px',
-        }}
-      >
-        <Box sx={{ marginTop: '1rem', marginLeft: '1rem' }}>{icon}</Box>
-      </Box>
+        <Box
+          sx={{
+            position: 'absolute',
+            top: '0',
+            left: '0',
+            height: '8rem',
+            width: '8rem',
+            background: linearBg,
+            borderRadius: '3px 3px 85px',
+          }}
+        >
+          <Box sx={{ marginTop: '1rem', marginLeft: '1rem' }}>{icon}</Box>
+        </Box>
       )}
       <CardHeader
         title={(
@@ -46,7 +46,12 @@ function Card({
         )}
         sx={{ marginTop: '-0.5rem' }}
       />
-      <CardContent sx={{ padding: '0 0.5rem' }}>{children}</CardContent>
+      <CardContent
+        {...CardContentProps}
+        sx={{ padding: '0 0.5rem', ...CardContentProps?.sx }}
+      >
+        {children}
+      </CardContent>
     </MuiCard>
   )
 }
@@ -55,6 +60,9 @@ Card.propTypes = {
   title: PropTypes.oneOfType([PropTypes.node, PropTypes.string]),
   children: PropTypes.oneOfType([PropTypes.node, PropTypes.string]),
   sx: PropTypes.shape({}),
+  CardContentProps: PropTypes.shape({
+    sx: PropTypes.shape({}),
+  }),
   icon: PropTypes.node,
 }
 

@@ -13,9 +13,11 @@ const descriptionConfigs = {
   社群互動力: '按讚數、留言數及分享數的加總，數值越高表示互動程度越高。',
   平均互動力: '平均每位經常互動者會有多少互動數。',
 }
-function TitleData({ title, markNumber, unit }) {
+function TitleData({
+  title, value = 8810, markNumber, unit = '', TitleStackProps,
+}) {
   // 單位
-  const TypesConfig = {
+  const unitTypesMap = {
     percentage: (
       <Typography
         sx={{
@@ -37,11 +39,11 @@ function TitleData({ title, markNumber, unit }) {
     channels: <Typography sx={{ marginLeft: '1rem' }}>頻道數</Typography>,
     piece: <Typography sx={{ marginLeft: '1rem' }}>則</Typography>,
     people: <Typography sx={{ marginLeft: '1rem' }}>人</Typography>,
-    none: '',
   }
+
   return (
     <Stack spacing={1}>
-      <Stack direction="row" spacing={2} alignItems="end">
+      <Stack direction="row" spacing={2} alignItems="end" {...TitleStackProps}>
         <Typography
           variant="h4"
           sx={{
@@ -58,9 +60,9 @@ function TitleData({ title, markNumber, unit }) {
             fontSize: '3rem',
           }}
         >
-          8,810
+          {value}
         </Typography>
-        {TypesConfig[unit]}
+        {unitTypesMap[unit]}
       </Stack>
       <Typography variant="body1" sx={{ color: 'customGray.light', fontSize: '1.5rem' }}>
         {descriptionConfigs[title]}
@@ -73,6 +75,8 @@ TitleData.propTypes = {
   markNumber: PropTypes.number,
   unit: PropTypes.string,
   title: PropTypes.string,
+  value: PropTypes.number,
+  TitleStackProps: PropTypes.shape({}),
 }
 
 export default TitleData
