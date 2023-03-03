@@ -11,6 +11,8 @@ const PostListCardPropTypes = {
   tabValue: PropTypes.number,
   tabOnChange: PropTypes.func,
   tabNames: PropTypes.arrayOf(PropTypes.string),
+  displayDateStart: PropTypes.string,
+  displayDateEnd: PropTypes.string,
   data: PropTypes.arrayOf(PropTypes.shape({
     author: PropTypes.string,
     cc: PropTypes.number,
@@ -92,9 +94,14 @@ const additionalColumn = [
   },
 ]
 function PostListCard({
-  withLikeShare = false, tabValue = 0, tabOnChange = () => {}, tabNames = [], data,
+  withLikeShare = false,
+  tabValue = 0,
+  tabOnChange = () => {},
+  tabNames = [],
+  data,
+  displayDateStart,
+  displayDateEnd,
 }) {
-  console.log(data, 'data')
   const dataWithId = data.map((item) => ({
     ...item,
     id: item.ref,
@@ -113,7 +120,7 @@ function PostListCard({
               fontSize: '2.4rem',
             }}
           >
-            2023/02/17 的文章列表
+            {`${displayDateStart} - ${displayDateEnd}的文章列表`}
           </Typography>
         </Stack>
       )}

@@ -28,6 +28,8 @@ function TextList() {
   )
   const formattedDateStart = dateFormat(startDate, 'yyyymmdd')
   const formattedDateEnd = dateFormat(endDate, 'yyyymmdd')
+  const displayDateStart = dateFormat(startDate, 'yyyy/mm/dd')
+  const displayDateEnd = dateFormat(endDate, 'yyyy/mm/dd')
   const [tabValue, setTabValue] = useState(0)
   const handleTableValue = (e, newValue) => {
     setTabValue(newValue)
@@ -42,7 +44,6 @@ function TextList() {
     }),
     select: (d) => d.result,
   })
-
   if (isLoading || isFetching) {
     return <LoadingProgress />
   }
@@ -60,7 +61,14 @@ function TextList() {
 )}
         icon={<EqualizerIcon sx={{ fontSize: '3rem' }} />}
       />
-      <PostListCard data={data} tabValue={tabValue} tabOnChange={handleTableValue} tabNames={['全部來源', '新聞', '社群', '討論區']} />
+      <PostListCard
+        data={data}
+        tabValue={tabValue}
+        tabOnChange={handleTableValue}
+        tabNames={['全部來源', '新聞', '社群', '討論區']}
+        displayDateStart={displayDateStart}
+        displayDateEnd={displayDateEnd}
+      />
     </Stack>
   )
 }
