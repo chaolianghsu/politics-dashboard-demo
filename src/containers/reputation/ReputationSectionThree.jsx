@@ -10,9 +10,10 @@ import {
 } from '@/components'
 import { useQuery } from '@tanstack/react-query'
 import { shallow } from 'zustand/shallow'
+import dateFormat from 'dateformat'
+
 import { useGlobalDateStore } from '@/store'
 import { socialAPI } from '@/apis'
-import dateFormat from 'dateformat'
 
 function ReputationSectionThree() {
   const { startDate, endDate } = useGlobalDateStore(
