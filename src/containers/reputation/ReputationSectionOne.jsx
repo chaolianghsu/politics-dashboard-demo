@@ -20,7 +20,7 @@ import {
   LoadingProgress,
 } from '@/components'
 import { useGlobalDateStore } from '@/store'
-import { volumeAPI, reputationAPI } from '@/apis'
+import { volumeAPI, reputationAPI, favorabilityAPI } from '@/apis'
 
 function ReputationSectionOne() {
   const navigate = useNavigate()
@@ -54,28 +54,42 @@ function ReputationSectionOne() {
     select: (d) => d.result[0],
   })
 
+  const {
+    data: favorabilityData,
+    isLoading: isGetFavorabilityDataLoading,
+    isFetching: isGetFavorabilityDataFetching,
+  } = useQuery({
+    queryKey: [favorabilityAPI.Url, formattedDateStart, formattedDateEnd],
+    queryFn: () => favorabilityAPI.getData({
+      from: formattedDateStart,
+      to: formattedDateEnd,
+    }),
+    select: (d) => d.result[0],
+  })
+
   if (
     isGetVolumeDataLoading
     || isGetVolumeDataFetching
     || isGetReputationDataLoading
     || isGetReputationDataFetching
+    || isGetFavorabilityDataLoading
+    || isGetFavorabilityDataFetching
   ) {
     return <LoadingProgress />
   }
-  const sentiments = [
-    {
-      name: '正評',
-      value: 770,
-      percent: 18.03,
-      color: '#8E9EE3',
-    },
-    {
-      name: '負評',
-      value: 1491,
-      percent: 18.03,
-      color: '#1BFBE4',
-    },
-  ]
+
+  const {
+    pn: favorabilityValue,
+    grow: favorabilityGrow,
+    data: favorabilityDataRaw,
+  } = favorabilityData
+
+  const sentiments = favorabilityDataRaw.filter((sen) => sen.senti !== '中立').map((sen) => ({
+    name: `${sen.senti.split('')[0]}評`,
+    value: sen.t,
+    percent: sen.pc,
+    color: sen.senti === '正面' ? '#8E9EE3' : '#1BFBE4',
+  }))
 
   const {
     total: volumeTotal,
@@ -84,7 +98,6 @@ function ReputationSectionOne() {
     data: volumeSeriesRaw,
   } = volumeData
 
-  console.log(reputationData)
   return (
     <Grid container spacing={2}>
       <Grid xs={12} md={4}>
@@ -216,8 +229,8 @@ function ReputationSectionOne() {
               }}
             >
               <TitleData
-                markNumber={10}
-                value={120}
+                markNumber={favorabilityGrow}
+                value={favorabilityValue.toLocaleString()}
                 unit="percentage"
                 title="好感度"
               />
@@ -240,7 +253,7 @@ function ReputationSectionOne() {
                 <Typography variant="body2">
                   &#40;
                   {sen.percent}
-                  %&#41;
+                  &#41;
                 </Typography>
               </Stack>
             ))}
@@ -249,10 +262,7 @@ function ReputationSectionOne() {
                 {
                   name: '筆數',
                   colorByPoint: true,
-                  data: [
-                    { name: '正評', y: 2323 },
-                    { name: '負評', y: 1122 },
-                  ],
+                  data: sentiments.map((sen) => ({ ...sen, y: sen.value })),
                 },
               ]}
               chartContainerProps={{
