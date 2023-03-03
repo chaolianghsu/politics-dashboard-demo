@@ -7,32 +7,22 @@ import { useNavigate } from 'react-router-dom'
 import { Card, CardTitle } from '@/components'
 import contentConfig from './contentConfig'
 
-const titleConfig = {
-  網路聲量: 'vol',
-  聲譽值: 'reputation',
-  好感度: 'favorability',
-  互動強度: 'interaction',
-  擴散廣度: 'diffusion',
-  社群互動力: 'social_rc',
-  粉絲觸及力: 'social_touch',
-}
-
 function PredictionCardGrid({ data }) {
   const navigate = useNavigate()
 
   const dataFormat = contentConfig.map((item) => {
-    if (data[titleConfig[item.title]]) {
-      if (item.title === '互動強度') {
-        return {
-          ...item,
-          subTitle: `${data[titleConfig[item.title]].total ?? data[titleConfig[item.title]]}則`,
-          markNumber: data[titleConfig[item.title]].grow ?? null,
-        }
-      }
+    if (data[item.indName]) {
       return {
         ...item,
-        subTitle: data[titleConfig[item.title]].total ?? data[titleConfig[item.title]],
-        markNumber: data[titleConfig[item.title]].grow ?? null,
+        subTitle: (
+          <>
+            {data[item.indName].total ?? data[item.indName]}
+            <Typography variant="body1" sx={{ marginLeft: '0.5rem' }}>
+              {item.unit}
+            </Typography>
+          </>
+        ),
+        markNumber: data[item.indName].grow ?? null,
       }
     }
     return item
@@ -40,7 +30,13 @@ function PredictionCardGrid({ data }) {
   return (
     <Grid container spacing={1}>
       {dataFormat.map((cardContent) => (
-        <Grid xs={12} md={6} lg={3} key={cardContent.title} sx={{ display: 'flex', cursor: 'pointer' }}>
+        <Grid
+          xs={12}
+          md={6}
+          lg={3}
+          key={cardContent.title}
+          sx={{ display: 'flex', cursor: 'pointer' }}
+        >
           <Card
             sx={{ width: '100%' }}
             title={(
