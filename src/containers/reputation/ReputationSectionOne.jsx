@@ -189,6 +189,7 @@ function ReputationSectionOne() {
             component: Stack,
             sx: {
               flex: '1',
+              marginLeft: '1rem',
             },
           }}
         >
