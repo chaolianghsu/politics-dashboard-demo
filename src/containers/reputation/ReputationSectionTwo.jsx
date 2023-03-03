@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import {
   Typography, Unstable_Grid2 as Grid, Stack, Box,
 } from '@mui/material'
@@ -86,6 +87,14 @@ function ReputationSectionTwo() {
     select: (d) => d.result[0],
   })
 
+  useEffect(() => {
+    if (wordCloudData) {
+      setTimeout(() => {
+        window.dispatchEvent(new Event('resize'))
+      }, 100)
+    }
+  }, [wordCloudData])
+
   if (
     isGetWordCloudDataLoading
     || isGetWordCloudDataFetching
@@ -96,8 +105,6 @@ function ReputationSectionTwo() {
   ) {
     return <LoadingProgress />
   }
-
-  console.log(diffusionData, interactionData)
 
   return (
     <Grid container spacing={2}>
@@ -190,6 +197,7 @@ function ReputationSectionTwo() {
           CardContentProps={{
             sx: {
               flex: 1,
+              maxHeight: '70rem',
             },
           }}
           title={(
@@ -204,7 +212,7 @@ function ReputationSectionTwo() {
             </Stack>
           )}
         >
-          <Stack margin={1.5} sx={{ height: '100%', width: '100%' }}>
+          <Stack margin={1.5} sx={{ width: '100%', height: '100%' }}>
             <WordCloudChart
               data={wordCloudData.map((d) => ({
                 name: d.name,
