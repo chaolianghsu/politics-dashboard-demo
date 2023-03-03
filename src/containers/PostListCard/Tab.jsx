@@ -19,7 +19,7 @@ const TabPropTypes = {
 function Tab({ tabValue, tabOnChange, tabNames }) {
   return (
     <MuiTabs value={tabValue} onChange={tabOnChange}>
-      {tabNames.map((item) => <CustomTab label={item} />)}
+      {tabNames.map((item) => <CustomTab label={item} key={item} />)}
     </MuiTabs>
   )
 }
