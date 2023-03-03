@@ -1,6 +1,7 @@
 import {
-  Box, CardContent, Typography, Stack, Link,
+  Box, CardContent, Typography, Stack, Link, styled,
 } from '@mui/material'
+import Tooltip, { tooltipClasses } from '@mui/material/Tooltip'
 import PropTypes from 'prop-types'
 import { Card, DataGrid, BlueButton } from '@/components'
 import { useState } from 'react'
@@ -33,6 +34,14 @@ const PostListCardPropTypes = {
   })),
 }
 
+const NoMaxWidthTooltip = styled(({ className, ...props }) => (
+  <Tooltip {...props} classes={{ popper: className }} />
+))({
+  [`& .${tooltipClasses.tooltip}`]: {
+    maxWidth: 'none',
+  },
+})
+
 const columns = [
   {
     field: 'title',
@@ -40,23 +49,29 @@ const columns = [
     sortable: false,
     flex: 1,
     renderCell: (index) => (
-      <>
-        <Typography sx={{
-          color: 'white', backgroundColor: 'customGridTextBlue.light', paddingX: '1rem', paddingY: '.3rem', marginRight: '1rem', borderRadius: '5px', fontSize: '15px', fontWeight: '400',
-        }}
-        >
-          {index.row.pt}
-        </Typography>
-        <Link
-          href={index.row.url}
-          sx={{
-            textDecoration: 'none', color: 'customGridTextBlue.main', fontSize: '15px', fontWeight: '400',
+      <NoMaxWidthTooltip
+        // open
+        placement="top"
+        title={<p style={{ fontSize: '15px', margin: '5px' }}>{index.value}</p>}
+      >
+        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+          <Typography sx={{
+            color: 'white', backgroundColor: 'customGridTextBlue.light', paddingX: '1rem', paddingY: '.3rem', marginRight: '1rem', borderRadius: '5px', fontSize: '15px', fontWeight: '400',
           }}
-          target="_block"
-        >
-          {index.value}
-        </Link>
-      </>
+          >
+            {index.row.pt}
+          </Typography>
+          <Link
+            href={index.row.url}
+            sx={{
+              textDecoration: 'none', color: 'customGridTextBlue.main', fontSize: '15px', fontWeight: '400',
+            }}
+            target="_block"
+          >
+            {index.value}
+          </Link>
+        </Box>
+      </NoMaxWidthTooltip>
     ),
   },
   {
