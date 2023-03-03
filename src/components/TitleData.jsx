@@ -75,7 +75,7 @@ TitleData.propTypes = {
   markNumber: PropTypes.number,
   unit: PropTypes.string,
   title: PropTypes.string,
-  value: PropTypes.number,
+  value: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   TitleStackProps: PropTypes.shape({}),
 }
 
