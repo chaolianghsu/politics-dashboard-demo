@@ -42,6 +42,10 @@ const NoMaxWidthTooltip = styled(({ className, ...props }) => (
   },
 })
 
+const CustomTypography = styled(Typography)({
+  color: 'rgb(115, 144, 168)', paddingX: '1rem', paddingY: '.3rem', marginRight: '1rem', borderRadius: '5px', fontSize: '15px', fontWeight: '400',
+})
+
 const columns = [
   {
     field: 'title',
@@ -79,18 +83,41 @@ const columns = [
     headerName: '資料來源',
     width: 150,
     sortable: false,
+    renderCell: (index) => (
+      <NoMaxWidthTooltip
+      // open
+        placement="top"
+        title={<p style={{ fontSize: '15px', margin: '5px' }}>{index.value}</p>}
+      >
+        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+          <CustomTypography>
+            {index.value}
+          </CustomTypography>
+        </Box>
+      </NoMaxWidthTooltip>
+    ),
   },
   {
     field: 'cc',
     headerName: '回文數',
     width: 100,
     sortable: false,
+    renderCell: (index) => (
+      <CustomTypography>
+        {index.value}
+      </CustomTypography>
+    ),
   },
   {
     field: 'time',
     headerName: '時間',
     width: 200,
     sortable: false,
+    renderCell: (index) => (
+      <CustomTypography>
+        {index.value}
+      </CustomTypography>
+    ),
   },
 ]
 
