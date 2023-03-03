@@ -1,6 +1,6 @@
 import { setupServer } from 'msw/node'
 import {
-  diffustionAPIs,
+  diffusionAPIs,
   favorabilityAPIs,
   hotkeywordAPIs,
   interactionAPIs,
@@ -15,7 +15,7 @@ import {
 
 // eslint-disable-next-line import/prefer-default-export
 export const server = setupServer(
-  ...diffustionAPIs,
+  ...diffusionAPIs,
   ...favorabilityAPIs,
   ...hotkeywordAPIs,
   ...interactionAPIs,
