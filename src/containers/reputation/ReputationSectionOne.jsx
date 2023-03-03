@@ -20,7 +20,7 @@ import {
   LoadingProgress,
 } from '@/components'
 import { useGlobalDateStore } from '@/store'
-import { volumeAPI } from '@/apis'
+import { volumeAPI, reputationAPI } from '@/apis'
 
 function ReputationSectionOne() {
   const navigate = useNavigate()
@@ -35,6 +35,16 @@ function ReputationSectionOne() {
   const formattedDateStart = dateFormat(startDate, 'yyyymmdd')
   const formattedDateEnd = dateFormat(endDate, 'yyyymmdd')
   const {
+    data: reputationData,
+    isLoading: isGetReputationDataLoading,
+    isFetching: isGetReputationDataFetching,
+  } = useQuery({
+    queryKey: [reputationAPI.Url, formattedDateStart, formattedDateEnd],
+    queryFn: () => reputationAPI.getData({ from: formattedDateStart, to: formattedDateEnd }),
+    select: (d) => d.result[0],
+  })
+
+  const {
     data: volumeData,
     isLoading: isGetVolumeDataLoading,
     isFetching: isGetVolumeDataFetching,
@@ -44,7 +54,12 @@ function ReputationSectionOne() {
     select: (d) => d.result[0],
   })
 
-  if (isGetVolumeDataLoading || isGetVolumeDataFetching) {
+  if (
+    isGetVolumeDataLoading
+    || isGetVolumeDataFetching
+    || isGetReputationDataLoading
+    || isGetReputationDataFetching
+  ) {
     return <LoadingProgress />
   }
   const sentiments = [
@@ -68,6 +83,8 @@ function ReputationSectionOne() {
     date: categories,
     data: volumeSeriesRaw,
   } = volumeData
+
+  console.log(reputationData)
   return (
     <Grid container spacing={2}>
       <Grid xs={12} md={4}>
@@ -113,8 +130,8 @@ function ReputationSectionOne() {
                 }}
               >
                 <TitleData
-                  markNumber={10}
-                  value={120}
+                  markNumber={reputationData.reputation_grow}
+                  value={reputationData.reputation.toLocaleString()}
                   unit="percentage"
                   title="聲譽值"
                   TitleStackProps={{
