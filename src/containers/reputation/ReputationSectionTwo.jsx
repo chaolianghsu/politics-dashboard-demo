@@ -15,7 +15,7 @@ import {
   LoadingProgress,
 } from '@/components'
 import { useGlobalDateStore } from '@/store'
-import { hotkeywordAPI } from '@/apis'
+import { hotkeywordAPI, diffusionAPI, interactionAPI } from '@/apis'
 
 const randomRows = [...new Array(10)].map(() => ({
   id: Math.random(),
@@ -53,15 +53,51 @@ function ReputationSectionTwo() {
   const formattedDateStart = dateFormat(startDate, 'yyyymmdd')
   const formattedDateEnd = dateFormat(endDate, 'yyyymmdd')
 
-  const { data: wordCloudData, isLoading, isFetching } = useQuery({
+  const {
+    data: wordCloudData,
+    isLoading: isGetWordCloudDataLoading,
+    isFetching: isGetWordCloudDataFetching,
+  } = useQuery({
     queryKey: [hotkeywordAPI.Url, formattedDateStart, formattedDateEnd],
     queryFn: () => hotkeywordAPI.getData({ from: formattedDateStart, to: formattedDateEnd }),
     select: (d) => d.result,
   })
 
-  if (isLoading || isFetching) {
+  const {
+    data: diffusionData,
+    isLoading: isGetDiffusionDataLoading,
+    isFetching: isGetDiffusionDataFetching,
+  } = useQuery({
+    queryKey: [diffusionAPI.Url, formattedDateStart, formattedDateEnd],
+    queryFn: () => diffusionAPI.getData({ from: formattedDateStart, to: formattedDateEnd }),
+    select: (d) => d.result[0],
+  })
+
+  const {
+    data: interactionData,
+    isLoading: isGetInteractionDataLoading,
+    isFetching: isGetInteractionDataFetching,
+  } = useQuery({
+    queryKey: [interactionAPI.Url, formattedDateStart, formattedDateEnd],
+    queryFn: () => interactionAPI.getData({
+      from: formattedDateStart,
+      to: formattedDateEnd,
+    }),
+    select: (d) => d.result[0],
+  })
+
+  if (
+    isGetWordCloudDataLoading
+    || isGetWordCloudDataFetching
+    || isGetDiffusionDataFetching
+    || isGetDiffusionDataLoading
+    || isGetInteractionDataFetching
+    || isGetInteractionDataLoading
+  ) {
     return <LoadingProgress />
   }
+
+  console.log(diffusionData, interactionData)
 
   return (
     <Grid container spacing={2}>
@@ -72,20 +108,29 @@ function ReputationSectionTwo() {
       >
         <Card title={<Typography variant="h4">網路散播力</Typography>}>
           <Stack margin={1.5}>
-            <Stack sx={{
-              marginBottom: '2rem',
-              flexDirection: {
-                xs: 'column',
-                md: 'row',
-              },
-              gap: '3rem',
-            }}
+            <Stack
+              sx={{
+                marginBottom: '2rem',
+                flexDirection: {
+                  xs: 'column',
+                  md: 'row',
+                },
+                gap: '3rem',
+              }}
             >
               <Box sx={{ flex: '1' }}>
-                <TitleData value={10} unit="channels" title="擴散廣度" />
+                <TitleData
+                  value={diffusionData.diffusion.toLocaleString()}
+                  unit="channels"
+                  title="擴散廣度"
+                />
               </Box>
               <Box sx={{ flex: '1' }}>
-                <TitleData value={120} unit="piece" title="互動強度" />
+                <TitleData
+                  value={interactionData.interaction.toLocaleString()}
+                  unit="piece"
+                  title="互動強度"
+                />
               </Box>
             </Stack>
             <DetailButton
@@ -159,10 +204,7 @@ function ReputationSectionTwo() {
             </Stack>
           )}
         >
-          <Stack
-            margin={1.5}
-            sx={{ height: '100%', width: '100%' }}
-          >
+          <Stack margin={1.5} sx={{ height: '100%', width: '100%' }}>
             <WordCloudChart
               data={wordCloudData.map((d) => ({
                 name: d.name,
