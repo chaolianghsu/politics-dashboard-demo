@@ -2,16 +2,16 @@ import {
   Stack, Avatar, Typography,
 } from '@mui/material'
 import TrackChangesIcon from '@mui/icons-material/TrackChanges'
+import { useQuery } from '@tanstack/react-query'
+import { shallow } from 'zustand/shallow'
+import dateFormat from 'dateformat'
 
 import { PredictionCardGrid } from '@/containers/prediction'
 import { HeaderBar, LoadingProgress } from '@/components'
-import KMDImg from '@/assets/pa01.png'
-
-import { useQuery } from '@tanstack/react-query'
-import { shallow } from 'zustand/shallow'
 import { useGlobalDateStore } from '@/store'
 import { predictModuleAPI } from '@/apis'
-import dateFormat from 'dateformat'
+
+import KMDImg from '@/assets/pa01.png'
 
 function Prediction() {
   const { startDate, endDate } = useGlobalDateStore(
