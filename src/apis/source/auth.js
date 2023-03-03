@@ -1,4 +1,3 @@
-import axios from 'axios'
 import { axiosInstance } from '../axiosInstance'
 
 export const Url = '/token'
@@ -6,7 +5,7 @@ export const tokenVerifyUrl = `${Url}/verify`
 export const tokenRefreshUrl = `${Url}/refresh`
 
 export const getToken = async ({ email, password }) => {
-  const res = await axios.post(Url, {
+  const res = await axiosInstance.post(Url, {
     email,
     password,
   })
