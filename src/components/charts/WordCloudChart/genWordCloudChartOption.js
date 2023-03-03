@@ -1,6 +1,6 @@
 const colors = ['#2454bb', '#436fa5', '#37a4ac', '#bd91c6', '#8dc2e8', '#61707d', '#718291', '#8397a8', '#98aaba', '#b5c1cc']
 
-const genWordCloudChartOption = ({ data }) => ({
+const genWordCloudChartOption = ({ data, background = false }) => ({
   series: [
     {
       type: 'wordcloud',
@@ -24,8 +24,9 @@ const genWordCloudChartOption = ({ data }) => ({
     enabled: false,
   },
   chart: {
-    backgroundColor: 'transparent',
-    height: '100%',
+    backgroundColor: background ? 'white' : 'transparent',
+    shadow: true,
+    borderRadius: '4px',
   },
 })
 

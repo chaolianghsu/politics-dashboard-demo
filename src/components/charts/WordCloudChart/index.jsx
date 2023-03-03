@@ -20,15 +20,16 @@ const WordCloudPropTypes = {
     PropTypes.shape({ name: PropTypes.string, weight: PropTypes.number }),
   ),
   chartContainerProps: PropTypes.shape({}),
+  background: PropTypes.bool,
 }
 
-function WordCloud({ data, chartContainerProps }) {
+function WordCloud({ data, chartContainerProps, background }) {
   return (
     <Box {...chartContainerProps}>
       <HighchartsReact
         highcharts={Highcharts}
         options={genWordCloudChartOption({
-          data,
+          data, background,
         })}
       />
     </Box>
