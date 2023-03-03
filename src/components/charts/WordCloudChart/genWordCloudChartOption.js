@@ -25,6 +25,7 @@ const genWordCloudChartOption = ({ data }) => ({
   },
   chart: {
     backgroundColor: 'transparent',
+    height: '100%',
   },
 })
 

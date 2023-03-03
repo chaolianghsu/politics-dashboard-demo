@@ -9,8 +9,8 @@ wordCloud(Highcharts)
 
 const archimedeanSpiral = function archimedeanSpiral(t) {
   return {
-    x: t * Math.cos(t) * 0.2,
-    y: t * Math.sin(t) * 0.1,
+    x: t * Math.cos(t) * 0.1,
+    y: t * Math.sin(t) * 0.2,
   }
 }
 Highcharts.seriesTypes.wordcloud.prototype.spirals.archimedean = archimedeanSpiral
