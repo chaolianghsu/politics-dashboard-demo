@@ -2,7 +2,7 @@ import { Stack } from '@mui/material'
 import EqualizerIcon from '@mui/icons-material/Equalizer'
 
 import { HeaderBar } from '@/components'
-import { ReputationSectionOne, ReputationSectionTwo } from '@/containers/reputation'
+import { ReputationSectionOne, ReputationSectionTwo, ReputationSectionThree } from '@/containers/reputation'
 
 function Reputation() {
   return (
@@ -13,6 +13,7 @@ function Reputation() {
       />
       <ReputationSectionOne />
       <ReputationSectionTwo />
+      <ReputationSectionThree />
     </Stack>
   )
 }
