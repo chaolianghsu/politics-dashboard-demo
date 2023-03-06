@@ -1,10 +1,9 @@
 import {
-  Box, CardContent, Typography, Stack, Link, styled,
+  Box, CardContent, Typography, Stack, Link, styled, CircularProgress,
 } from '@mui/material'
 import Tooltip, { tooltipClasses } from '@mui/material/Tooltip'
 import PropTypes from 'prop-types'
 import { Card, DataGrid, BlueButton } from '@/components'
-import { useState } from 'react'
 import Tab from './Tab'
 
 const PostListCardPropTypes = {
@@ -32,6 +31,9 @@ const PostListCardPropTypes = {
     url: PropTypes.string,
     vc: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   })),
+  isLoading: PropTypes.bool,
+  handleQueryPage: PropTypes.func,
+  isNoMoreData: PropTypes.bool,
 }
 
 const NoMaxWidthTooltip = styled(({ className, ...props }) => (
@@ -319,13 +321,16 @@ const additionalColumn = [
   },
 ]
 function PostListCard({
+  isLoading,
   withLikeShare = false,
+  handleQueryPage,
   tabValue = 0,
   tabOnChange = () => {},
   tabNames = [],
   data = fakeData,
   displayDateStart = '2023/01/01',
   displayDateEnd = '2023/02/01',
+  isNoMoreData = false,
 }) {
   const dataWithId = data.map((item) => ({
     ...item,
@@ -333,7 +338,7 @@ function PostListCard({
   }))
   const newColumns = withLikeShare
     ? [...columns.slice(0, 3), ...additionalColumn, ...columns.slice(3, 4)] : columns
-  const [currentSlice, setCurrentSlice] = useState(10)
+
   return (
     <Card
       title={(
@@ -361,16 +366,26 @@ function PostListCard({
         >
           {!!tabNames.length
           && <Tab tabValue={tabValue} tabOnChange={tabOnChange} tabNames={tabNames} />}
-          <DataGrid
-            rows={dataWithId.slice(0, currentSlice)}
-            columns={newColumns}
-            disableSelectionOnClick
-            hideFooter
-          />
+          {isLoading ? (
+            <Box sx={{
+              zIndex: 2000, width: '100%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', color: '#D0D0D0',
+            }}
+            >
+              <CircularProgress color="inherit" size={100} thickness={4} />
+            </Box>
+          ) : (
+            <DataGrid
+              rows={dataWithId}
+              columns={newColumns}
+              disableSelectionOnClick
+              hideFooter
+            />
+          )}
         </Box>
         <BlueButton
-          disabled={currentSlice === 50}
-          onClick={() => setCurrentSlice((prev) => prev + 10)}
+          sx={{ marginTop: '4rem' }}
+          disabled={isNoMoreData}
+          onClick={handleQueryPage}
         >
           載入更多
         </BlueButton>
