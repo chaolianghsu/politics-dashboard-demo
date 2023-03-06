@@ -12,6 +12,8 @@ const reputationModuleAPIs = [
         {
           date: '2023/02/16 ~ 2023/02/22',
           update: '2023/02/21',
+          name: '羅智強',
+          image: 'http://35.234.54.82/media/image/羅智強.png',
           vol: {
             total: 8806,
             grow: '-52.26',
