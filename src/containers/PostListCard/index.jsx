@@ -237,6 +237,7 @@ const columns = [
     headerName: '文章標題',
     sortable: false,
     flex: 1,
+    minWidth: 200,
     renderCell: (index) => (
       <NoMaxWidthTooltip
         // open
