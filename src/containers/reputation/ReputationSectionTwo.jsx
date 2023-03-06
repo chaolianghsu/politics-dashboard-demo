@@ -103,7 +103,11 @@ function ReputationSectionTwo() {
     || isGetInteractionDataFetching
     || isGetInteractionDataLoading
   ) {
-    return <LoadingProgress />
+    return (
+      <Box sx={{ marginTop: (theme) => (-2 * theme.spacing) }}>
+        <LoadingProgress />
+      </Box>
+    )
   }
 
   return (

@@ -75,7 +75,11 @@ function ReputationSectionOne() {
     || isGetFavorabilityDataLoading
     || isGetFavorabilityDataFetching
   ) {
-    return <LoadingProgress />
+    return (
+      <Box sx={{ marginTop: (theme) => (-2 * theme.spacing) }}>
+        <LoadingProgress />
+      </Box>
+    )
   }
 
   const {
@@ -84,12 +88,14 @@ function ReputationSectionOne() {
     data: favorabilityDataRaw,
   } = favorabilityData
 
-  const sentiments = favorabilityDataRaw.filter((sen) => sen.senti !== '中立').map((sen) => ({
-    name: `${sen.senti.split('')[0]}評`,
-    value: sen.t,
-    percent: sen.pc,
-    color: sen.senti === '正面' ? '#8E9EE3' : '#1BFBE4',
-  }))
+  const sentiments = favorabilityDataRaw
+    .filter((sen) => sen.senti !== '中立')
+    .map((sen) => ({
+      name: `${sen.senti.split('')[0]}評`,
+      value: sen.t,
+      percent: sen.pc,
+      color: sen.senti === '正面' ? '#8E9EE3' : '#1BFBE4',
+    }))
 
   const {
     total: volumeTotal,
