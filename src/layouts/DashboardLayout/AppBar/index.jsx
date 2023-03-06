@@ -18,11 +18,7 @@ import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp'
 import MenuIcon from '@mui/icons-material/Menu'
 import LogoutRoundedIcon from '@mui/icons-material/LogoutRounded'
 import dateFormat from 'dateformat'
-import {
-  addDays,
-  startOfWeek,
-  endOfWeek,
-} from 'date-fns'
+import { addDays, startOfWeek, endOfWeek } from 'date-fns'
 import { zhTW } from 'react-date-range/src/locale'
 import { createStaticRanges } from 'react-date-range'
 import { shallow } from 'zustand/shallow'
@@ -88,13 +84,11 @@ function AppBar({
     },
   ]
   const ranges = [...createStaticRanges(timeRanges)]
-  const [dateState, setDateState] = useState(
-    {
-      startDate: new Date(),
-      endDate: new Date(),
-      key: 'selection',
-    },
-  )
+  const [dateState, setDateState] = useState({
+    startDate: new Date(),
+    endDate: new Date(),
+    key: 'selection',
+  })
   const handleUserMenuClick = (e) => {
     setUserButtonAnchorEl(e.currentTarget)
   }
@@ -122,11 +116,12 @@ function AppBar({
         ...(drawerOpen && { marginLeft: `${drawerWidth}px` }),
       }}
     >
-      <Toolbar sx={{
-        '@media all': {
-          minHeight: height,
-        },
-      }}
+      <Toolbar
+        sx={{
+          '@media all': {
+            minHeight: height,
+          },
+        }}
       >
         <Box
           sx={{
@@ -145,14 +140,23 @@ function AppBar({
               <MenuIcon />
             </IconButton>
             <Box>
-              <Button size="small" variant="outlined" color="customGray" onClick={handleClick}>
-                <Box sx={{
-                  display: 'flex', alignItems: 'center', width: '100%', color: 'black',
-                }}
+              <Button
+                size="small"
+                variant="outlined"
+                color="customGray"
+                onClick={handleClick}
+              >
+                <Box
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    width: '100%',
+                    color: 'black',
+                  }}
                 >
                   <Typography
                     sx={{
-                      fontSize: '14px',
+                      fontSize: { xs: '1.2rem', sm: '1.4rem' },
                       marginRight: '.5rem',
                       fontWeight: '400',
                     }}
@@ -161,14 +165,17 @@ function AppBar({
                   >
                     調查期間
                   </Typography>
-                  <Typography sx={{ fontWeight: '500' }} noWrap>
+                  <Typography
+                    sx={{
+                      fontWeight: '500',
+                      fontSize: { xs: '1.2rem', sm: '1.6rem' },
+                    }}
+                    noWrap
+                  >
                     {`${dateFormat(
                       startDate.toString(),
                       'yyyy-mm-dd',
-                    )} ~ ${dateFormat(
-                      endDate.toString(),
-                      'yyyy-mm-dd',
-                    )}`}
+                    )} ~ ${dateFormat(endDate.toString(), 'yyyy-mm-dd')}`}
                   </Typography>
                   {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
                 </Box>
@@ -208,21 +215,24 @@ function AppBar({
               </Popover>
             </Box>
           </Box>
-          <Box sx={{
-            display: 'flex', alignItems: 'center',
-          }}
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+            }}
           >
             <Button
               disableElevation
               onClick={handleUserMenuClick}
-              endIcon={<KeyboardArrowDownIcon />}
-              sx={{ p: 0, px: 1, minWidth: '0px' }}
+              endIcon={<KeyboardArrowDownIcon sx={{ marginLeft: '-0.8rem' }} />}
+              sx={{ p: 0, px: 0, minWidth: '0px' }}
             >
-              <Avatar sx={{
-                width: '32px',
-                height: '32px',
-                backgroundColor: (theme) => theme.palette.customDeepBlue.main,
-              }}
+              <Avatar
+                sx={{
+                  width: '32px',
+                  height: '32px',
+                  backgroundColor: (theme) => theme.palette.customDeepBlue.main,
+                }}
               >
                 A
               </Avatar>
@@ -252,9 +262,7 @@ const AppBarProps = {
   drawerWidth: PropTypes.number,
   drawerOpen: PropTypes.bool,
   toggleDrawer: PropTypes.func,
-  height: PropTypes.oneOfType([
-    PropTypes.string, PropTypes.number,
-  ]),
+  height: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
 }
 AppBar.propTypes = AppBarProps
 export default AppBar
