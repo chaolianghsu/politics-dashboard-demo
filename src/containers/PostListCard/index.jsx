@@ -1,5 +1,5 @@
 import {
-  Box, CardContent, Typography, Stack, Link, styled, CircularProgress,
+  Box, CardContent, Typography, Stack, Link, styled,
 } from '@mui/material'
 import Tooltip, { tooltipClasses } from '@mui/material/Tooltip'
 import PropTypes from 'prop-types'
@@ -339,7 +339,6 @@ function PostListCard({
   }))
   const newColumns = withLikeShare
     ? [...columns.slice(0, 3), ...additionalColumn, ...columns.slice(3, 4)] : columns
-
   return (
     <Card
       title={(
@@ -367,21 +366,14 @@ function PostListCard({
         >
           {!!tabNames.length
           && <Tab tabValue={tabValue} tabOnChange={tabOnChange} tabNames={tabNames} />}
-          {isLoading ? (
-            <Box sx={{
-              zIndex: 2000, width: '100%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', color: '#D0D0D0',
-            }}
-            >
-              <CircularProgress color="inherit" size={100} thickness={4} />
-            </Box>
-          ) : (
-            <DataGrid
-              rows={dataWithId}
-              columns={newColumns}
-              disableSelectionOnClick
-              hideFooter
-            />
-          )}
+          <DataGrid
+            rows={dataWithId}
+            columns={newColumns}
+            disableSelectionOnClick
+            hideFooter
+            loading={isLoading}
+            getRowId={Math.random}
+          />
         </Box>
         <BlueButton
           sx={{ marginTop: '4rem' }}
