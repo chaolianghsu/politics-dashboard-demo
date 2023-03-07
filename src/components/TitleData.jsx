@@ -72,7 +72,7 @@ function TitleData({
 }
 
 TitleData.propTypes = {
-  markNumber: PropTypes.number,
+  markNumber: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   unit: PropTypes.string,
   title: PropTypes.string,
   value: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
