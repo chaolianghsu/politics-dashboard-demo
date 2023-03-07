@@ -7,28 +7,32 @@ import genWordCloudChartOption from './genWordCloudChartOption'
 
 wordCloud(Highcharts)
 
-const archimedeanSpiral = function archimedeanSpiral(t) {
-  return {
-    x: t * Math.cos(t) * 0.1,
-    y: t * Math.sin(t) * 0.2,
-  }
-}
-Highcharts.seriesTypes.wordcloud.prototype.spirals.archimedean = archimedeanSpiral
-
 const WordCloudPropTypes = {
   data: PropTypes.arrayOf(
     PropTypes.shape({ name: PropTypes.string, weight: PropTypes.number }),
   ),
   chartContainerProps: PropTypes.shape({}),
+  background: PropTypes.bool,
+  size: PropTypes.string,
 }
 
-function WordCloud({ data, chartContainerProps }) {
+function WordCloud({
+  data, chartContainerProps, background, size = 'small',
+}) {
+  const archimedeanSpiral = function archimedeanSpiral(t) {
+    return {
+      x: t * Math.cos(t) * (size === 'small' ? 0.1 : 0.2),
+      y: t * Math.sin(t) * (size === 'small' ? 0.2 : 0.1),
+    }
+  }
+  Highcharts.seriesTypes.wordcloud.prototype.spirals.archimedean = archimedeanSpiral
+
   return (
     <Box {...chartContainerProps}>
       <HighchartsReact
         highcharts={Highcharts}
         options={genWordCloudChartOption({
-          data,
+          data, background, size,
         })}
       />
     </Box>
