@@ -49,6 +49,7 @@ function HotKeyword() {
       <WordCloudChart
         data={data.map((d) => ({ name: d.name, weight: d.value }))}
         background
+        size="large"
       />
     </Stack>
   )
