@@ -2,60 +2,91 @@ import {
   Typography, Stack, Unstable_Grid2 as Grid, Box,
 } from '@mui/material'
 import {
-  Card, TitleData, BarChart, RadarChart,
+  Card,
+  TitleData,
+  BarChart,
+  RadarChart,
+  LoadingProgress,
 } from '@/components'
+import { useQuery } from '@tanstack/react-query'
+import { shallow } from 'zustand/shallow'
+import dateFormat from 'dateformat'
 
-const fakeData = {
-  date: [
-    '2023/02/14',
-    '2023/02/15',
-    '2023/02/16',
-    '2023/02/17',
-    '2023/02/18',
-    '2023/02/19',
-    '2023/02/20',
-  ],
-  data: [
-    {
-      tn: '羅智強',
-      q: '(羅智強|羅小強|羅痔瘡|羅智|羅智弱|羅自戕|騾子強)',
-      g: [1424, 1967, 1191, 1557, 1465, 1071, 428],
-      pc: '100.0%',
-      t: 9103,
-    },
-  ],
-  total: 9103,
-  grow: '-51.05',
-}
+import { useGlobalDateStore } from '@/store'
+import { socialAPI } from '@/apis'
 
 function ReputationSectionThree() {
+  const { startDate, endDate } = useGlobalDateStore(
+    (state) => ({
+      startDate: state.startDate,
+      endDate: state.endDate,
+    }),
+    shallow,
+  )
+
+  const formattedDateStart = dateFormat(startDate, 'yyyymmdd')
+  const formattedDateEnd = dateFormat(endDate, 'yyyymmdd')
+
+  const { data, isLoading, isFetching } = useQuery({
+    queryKey: [socialAPI.Url, formattedDateStart, formattedDateEnd],
+    queryFn: () => socialAPI.getData({ from: formattedDateStart, to: formattedDateEnd }),
+    select: (d) => d.result[0],
+  })
+
+  if (isLoading || isFetching) {
+    return <LoadingProgress />
+  }
+
+  const { categories } = data.social_touch
+
+  const socialTouchData = data.social_touch
+  const socialTouchSeries = [
+    { ...socialTouchData.series[0], color: '#1BFBE4' },
+  ]
+  const socialTouchTotal = socialTouchData.total
+
+  const socialReactionCountData = data.social_rc
+  const socialReactionCountSeries = [
+    { ...socialReactionCountData.series[0], color: '#8E9EE3' },
+  ]
+  const socialReactionCountTotal = socialReactionCountData.total
+
+  const socialReactionCountRatio = data.social_rc_ratio
+  const {
+    comments: socialReactionCountRatioCommentsTotal,
+    shares: socialReactionCountRatioSharesTotal,
+    reactions: socialReactionCountRatioReactionsTotal,
+    ratio: socialReactionCountRatioValue,
+    sad: sadCount,
+    wow: wowCount,
+    love: loveCount,
+    angry: angryCount,
+    haha: hahaCount,
+    like: likeCount,
+  } = socialReactionCountRatio
   return (
     <Box sx={{ padding: '1rem' }}>
       <Card title={<Typography variant="h4">社群經營力</Typography>}>
         <Grid container spacing={2} sx={{ padding: '1rem' }}>
           <Grid xs={12} md={6} lg={4}>
             <Stack>
-              <TitleData title="粉絲觸及力" value={118829} unit="people" />
-              <BarChart
-                categories={fakeData.date}
-                series={fakeData.data.map((d) => ({
-                  name: d.tn,
-                  data: d.g,
-                  color: '#1BFBE4',
-                }))}
+              <TitleData
+                title="粉絲成長數"
+                value={socialTouchTotal.toLocaleString()}
+                unit="people"
               />
+              <BarChart categories={categories} series={socialTouchSeries} />
             </Stack>
           </Grid>
           <Grid xs={12} md={6} lg={4}>
             <Stack>
-              <TitleData title="社群戶動力" value={11443} />
+              <TitleData
+                title="社群互動率"
+                value={socialReactionCountTotal.toLocaleString()}
+              />
               <BarChart
-                categories={fakeData.date}
-                series={fakeData.data.map((d) => ({
-                  name: d.tn,
-                  data: d.g,
-                  color: '#8E9EE3',
-                }))}
+                categories={categories}
+                series={socialReactionCountSeries}
               />
             </Stack>
           </Grid>
@@ -67,11 +98,13 @@ function ReputationSectionThree() {
             }}
           >
             <Stack>
-              <TitleData title="平均互動力" value={1.23} />
+              <TitleData
+                title="平均互動力"
+                value={socialReactionCountRatioValue}
+              />
               <Stack
                 sx={{
                   marginTop: '1rem',
-
                 }}
                 spacing={3}
                 direction="row"
@@ -84,25 +117,29 @@ function ReputationSectionThree() {
                     variant="body1"
                     sx={{ color: 'customBlue.main', fontSize: '2.2rem' }}
                   >
-                    145404
+                    {likeCount.toLocaleString()}
                   </Typography>
                 </Stack>
                 <Stack>
-                  <Typography variant="body1" sx={{ color: 'customGray.main' }}>留言數</Typography>
+                  <Typography variant="body1" sx={{ color: 'customGray.main' }}>
+                    留言數
+                  </Typography>
                   <Typography
                     variant="body1"
                     sx={{ color: 'customBlue.main', fontSize: '2.2rem' }}
                   >
-                    145404
+                    {socialReactionCountRatioCommentsTotal.toLocaleString()}
                   </Typography>
                 </Stack>
                 <Stack>
-                  <Typography variant="body1" sx={{ color: 'customGray.main' }}>分享數</Typography>
+                  <Typography variant="body1" sx={{ color: 'customGray.main' }}>
+                    分享數
+                  </Typography>
                   <Typography
                     variant="body1"
                     sx={{ color: 'customBlue.main', fontSize: '2.2rem' }}
                   >
-                    145404
+                    {socialReactionCountRatioSharesTotal.toLocaleString()}
                   </Typography>
                 </Stack>
               </Stack>
@@ -113,7 +150,13 @@ function ReputationSectionThree() {
                 series={[
                   {
                     name: '',
-                    data: [14, 20, 133, 30, 52],
+                    data: [
+                      loveCount,
+                      hahaCount,
+                      wowCount,
+                      sadCount,
+                      angryCount,
+                    ],
                   },
                 ]}
               />
@@ -124,14 +167,13 @@ function ReputationSectionThree() {
                 variant="body1"
                 sx={{ color: 'customBlue.main', fontSize: '2.2rem' }}
               >
-                145404
+                {socialReactionCountRatioReactionsTotal.toLocaleString()}
               </Typography>
             </Stack>
           </Grid>
         </Grid>
       </Card>
     </Box>
-
   )
 }
 

@@ -34,6 +34,7 @@ function WordCloud({
         options={genWordCloudChartOption({
           data, background, size,
         })}
+        immutable
       />
     </Box>
   )

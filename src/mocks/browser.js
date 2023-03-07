@@ -1,6 +1,6 @@
 import { setupWorker } from 'msw'
 import {
-  diffustionAPIs,
+  diffusionAPIs,
   favorabilityAPIs,
   hotkeywordAPIs,
   interactionAPIs,
@@ -15,7 +15,7 @@ import {
 
 // eslint-disable-next-line import/prefer-default-export
 export const worker = setupWorker(
-  ...diffustionAPIs,
+  ...diffusionAPIs,
   ...favorabilityAPIs,
   ...hotkeywordAPIs,
   ...interactionAPIs,

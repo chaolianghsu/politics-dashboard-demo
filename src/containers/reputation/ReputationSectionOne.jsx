@@ -7,6 +7,9 @@ import {
   Unstable_Grid2 as Grid,
 } from '@mui/material'
 import { useNavigate } from 'react-router-dom'
+import { useQuery } from '@tanstack/react-query'
+import { shallow } from 'zustand/shallow'
+import dateFormat from 'dateformat'
 
 import {
   Card,
@@ -14,48 +17,86 @@ import {
   LineChart,
   DetailButton,
   ColChart,
+  LoadingProgress,
 } from '@/components'
-
-const fakeData = {
-  date: [
-    '2023/02/14',
-    '2023/02/15',
-    '2023/02/16',
-    '2023/02/17',
-    '2023/02/18',
-    '2023/02/19',
-    '2023/02/20',
-  ],
-  data: [
-    {
-      tn: '羅智強',
-      q: '(羅智強|羅小強|羅痔瘡|羅智|羅智弱|羅自戕|騾子強)',
-      g: [1424, 1967, 1191, 1557, 1465, 1071, 428],
-      pc: '100.0%',
-      t: 9103,
-    },
-  ],
-  total: 9103,
-  grow: '-51.05',
-}
+import { useGlobalDateStore } from '@/store'
+import { volumeAPI, reputationAPI, favorabilityAPI } from '@/apis'
 
 function ReputationSectionOne() {
   const navigate = useNavigate()
+  const { startDate, endDate } = useGlobalDateStore(
+    (state) => ({
+      startDate: state.startDate,
+      endDate: state.endDate,
+    }),
+    shallow,
+  )
 
-  const sentiments = [
-    {
-      name: '正評',
-      value: 770,
-      percent: 18.03,
-      color: '#8E9EE3',
-    },
-    {
-      name: '負評',
-      value: 1491,
-      percent: 18.03,
-      color: '#1BFBE4',
-    },
-  ]
+  const formattedDateStart = dateFormat(startDate, 'yyyymmdd')
+  const formattedDateEnd = dateFormat(endDate, 'yyyymmdd')
+  const {
+    data: reputationData,
+    isLoading: isGetReputationDataLoading,
+    isFetching: isGetReputationDataFetching,
+  } = useQuery({
+    queryKey: [reputationAPI.Url, formattedDateStart, formattedDateEnd],
+    queryFn: () => reputationAPI.getData({ from: formattedDateStart, to: formattedDateEnd }),
+    select: (d) => d.result[0],
+  })
+
+  const {
+    data: volumeData,
+    isLoading: isGetVolumeDataLoading,
+    isFetching: isGetVolumeDataFetching,
+  } = useQuery({
+    queryKey: [volumeAPI.Url, formattedDateStart, formattedDateEnd],
+    queryFn: () => volumeAPI.getData({ from: formattedDateStart, to: formattedDateEnd }),
+    select: (d) => d.result[0],
+  })
+
+  const {
+    data: favorabilityData,
+    isLoading: isGetFavorabilityDataLoading,
+    isFetching: isGetFavorabilityDataFetching,
+  } = useQuery({
+    queryKey: [favorabilityAPI.Url, formattedDateStart, formattedDateEnd],
+    queryFn: () => favorabilityAPI.getData({
+      from: formattedDateStart,
+      to: formattedDateEnd,
+    }),
+    select: (d) => d.result[0],
+  })
+
+  if (
+    isGetVolumeDataLoading
+    || isGetVolumeDataFetching
+    || isGetReputationDataLoading
+    || isGetReputationDataFetching
+    || isGetFavorabilityDataLoading
+    || isGetFavorabilityDataFetching
+  ) {
+    return <LoadingProgress />
+  }
+
+  const {
+    pn: favorabilityValue,
+    grow: favorabilityGrow,
+    data: favorabilityDataRaw,
+  } = favorabilityData
+
+  const sentiments = favorabilityDataRaw.filter((sen) => sen.senti !== '中立').map((sen) => ({
+    name: `${sen.senti.split('')[0]}評`,
+    value: sen.t,
+    percent: sen.pc,
+    color: sen.senti === '正面' ? '#8E9EE3' : '#1BFBE4',
+  }))
+
+  const {
+    total: volumeTotal,
+    grow: volumeGrow,
+    date: categories,
+    data: volumeSeriesRaw,
+  } = volumeData
 
   return (
     <Grid container spacing={2}>
@@ -102,8 +143,8 @@ function ReputationSectionOne() {
                 }}
               >
                 <TitleData
-                  markNumber={10}
-                  value={120}
+                  markNumber={reputationData.reputation_grow}
+                  value={reputationData.reputation.toLocaleString()}
                   unit="percentage"
                   title="聲譽值"
                   TitleStackProps={{
@@ -136,18 +177,19 @@ function ReputationSectionOne() {
               }}
             >
               <TitleData
-                markNumber={10}
-                value={120}
+                markNumber={volumeGrow}
+                value={volumeTotal.toLocaleString()}
                 unit="percentage"
                 title="網路聲量"
               />
             </Box>
-            )}
+          )}
           sx={{ width: '100%', display: 'flex', flexDirection: 'column' }}
           CardContentProps={{
             component: Stack,
             sx: {
               flex: '1',
+              marginLeft: '1rem',
             },
           }}
         >
@@ -162,13 +204,16 @@ function ReputationSectionOne() {
             聲量趨勢
           </Typography>
           <LineChart
-            categories={fakeData.date}
-            series={fakeData.data.map((d) => ({
+            categories={categories}
+            series={volumeSeriesRaw.map((d) => ({
               name: d.tn,
               data: d.g,
             }))}
           />
-          <DetailButton onClick={() => navigate('/reputation/volume')} sx={{ marginTop: 'auto' }}>
+          <DetailButton
+            onClick={() => navigate('/reputation/volume')}
+            sx={{ marginTop: 'auto' }}
+          >
             詳細資料
           </DetailButton>
         </Card>
@@ -185,17 +230,22 @@ function ReputationSectionOne() {
               }}
             >
               <TitleData
-                markNumber={10}
-                value={120}
+                markNumber={favorabilityGrow}
+                value={favorabilityValue.toLocaleString()}
                 unit="percentage"
                 title="好感度"
               />
             </Box>
-        )}
+          )}
         >
           <Stack sx={{ marginX: '1rem' }}>
             {sentiments.map((sen) => (
-              <Stack direction="row" key={sen.name} sx={{ alignItems: 'end' }} spacing={1}>
+              <Stack
+                direction="row"
+                key={sen.name}
+                sx={{ alignItems: 'end' }}
+                spacing={1}
+              >
                 <Typography variant="body2">{sen.name}</Typography>
                 <Typography variant="h4" sx={{ color: sen.color }}>
                   {sen.value.toLocaleString()}
@@ -204,7 +254,7 @@ function ReputationSectionOne() {
                 <Typography variant="body2">
                   &#40;
                   {sen.percent}
-                  %&#41;
+                  &#41;
                 </Typography>
               </Stack>
             ))}
@@ -213,10 +263,7 @@ function ReputationSectionOne() {
                 {
                   name: '筆數',
                   colorByPoint: true,
-                  data: [
-                    { name: '正評', y: 2323 },
-                    { name: '負評', y: 1122 },
-                  ],
+                  data: sentiments.map((sen) => ({ ...sen, y: sen.value })),
                 },
               ]}
               chartContainerProps={{
