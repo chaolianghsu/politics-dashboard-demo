@@ -154,7 +154,7 @@ function Spread() {
       mainArticleData: diffusionData.series[0].data,
       replyData: diffusionData.series[1].data,
     }),
-    1: data?.pages.reduce((acc, item) => [...acc, ...item.result], []) || [],
+    1: data?.pages?.reduce((acc, item) => [...acc, ...item.result], []) || [],
   }
 
   return (

@@ -11,34 +11,14 @@ import {
   Card,
   TitleData,
   DetailButton,
-  DataGrid,
   WordCloudChart,
   LoadingProgress,
 } from '@/components'
 import { useGlobalDateStore } from '@/store'
-import { hotkeywordAPI, diffusionAPI, interactionAPI } from '@/apis'
-
-const randomRows = [...new Array(10)].map(() => ({
-  id: Math.random(),
-  col1: Math.random(),
-  col2: Math.random(),
-}))
-
-const columns = [
-  {
-    field: 'col1',
-    headerName: 'Column 1',
-    width: 150,
-    sortable: false,
-    flex: 1,
-  },
-  {
-    field: 'col2',
-    headerName: 'Column 2',
-    width: 150,
-    sortable: false,
-  },
-]
+import {
+  hotkeywordAPI, diffusionAPI, interactionAPI, textlistAPI,
+} from '@/apis'
+import { PostListCard } from '@/containers'
 
 function ReputationSectionTwo() {
   const navigate = useNavigate()
@@ -85,6 +65,21 @@ function ReputationSectionTwo() {
       to: formattedDateEnd,
     }),
     select: (d) => d.result[0],
+  })
+
+  const {
+    data,
+    isLoading: isGetTextListDataLoading,
+    isFetching: isGetTextListDataFetching,
+  } = useQuery({
+    queryKey: [textlistAPI.Url, formattedDateStart, formattedDateEnd, '', 'single-query'],
+    queryFn: () => textlistAPI.getData({
+      from: formattedDateStart,
+      to: formattedDateEnd,
+      type: '',
+      page: 1,
+    }),
+    select: (d) => d.result,
   })
 
   useEffect(() => {
@@ -166,21 +161,18 @@ function ReputationSectionTwo() {
           )}
         >
           <Stack margin={1.5}>
-            <Box
+            <PostListCard
+              data={data?.slice(0, 5)}
+              isLoading={isGetTextListDataLoading || isGetTextListDataFetching}
+              dataGridHeight="34.5rem"
               sx={{
-                height: '30rem',
-                width: '100%',
-                backgroundColor: 'customWhite.main',
-                padding: '1rem',
+                padding: '0',
+                boxShadow: 'none',
+                '& .MuiCardContent-root': {
+                  paddingBottom: '0 !important',
+                },
               }}
-            >
-              <DataGrid
-                rows={randomRows}
-                columns={columns}
-                disableSelectionOnClick
-                hideFooter
-              />
-            </Box>
+            />
             <DetailButton
               onClick={() => navigate('/reputation/textlist')}
               sx={{ marginLeft: 'auto' }}
