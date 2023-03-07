@@ -182,7 +182,7 @@ function ReputationSectionTwo() {
               />
             </Box>
             <DetailButton
-              onClick={() => navigate('/reputation/spread')}
+              onClick={() => navigate('/reputation/textlist')}
               sx={{ marginLeft: 'auto' }}
             >
               詳細資料
@@ -232,7 +232,7 @@ function ReputationSectionTwo() {
               }}
             />
             <DetailButton
-              onClick={() => navigate('/reputation/spread')}
+              onClick={() => navigate('/reputation/hotkeyword')}
               sx={{ marginRight: '2rem', marginBottom: '2.5rem' }}
             >
               詳細資料
