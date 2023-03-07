@@ -9,12 +9,8 @@ function PrivateRoutes() {
 
   const { mutate } = useMutation(authAPI.verifyToken, {
     onSuccess: () => {},
-    onError: (error) => {
-      if (error.response.status === 401) {
-        navigate('/login', { replace: true, state: { from: location } })
-        return
-      }
-      navigate('/not-found', { replace: true })
+    onError: () => {
+      navigate('/login', { replace: true, state: { from: location } })
     },
   })
 

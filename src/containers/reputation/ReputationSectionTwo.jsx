@@ -72,7 +72,7 @@ function ReputationSectionTwo() {
     isLoading: isGetTextListDataLoading,
     isFetching: isGetTextListDataFetching,
   } = useQuery({
-    queryKey: [textlistAPI.Url, formattedDateStart, formattedDateEnd, ''],
+    queryKey: [textlistAPI.Url, formattedDateStart, formattedDateEnd, '', 'single-query'],
     queryFn: () => textlistAPI.getData({
       from: formattedDateStart,
       to: formattedDateEnd,

@@ -66,7 +66,7 @@ function TextList() {
         icon={<EqualizerIcon sx={{ fontSize: '3rem' }} />}
       />
       <PostListCard
-        data={data && data.pages.reduce((acc, item) => [...acc, ...item.result], [])}
+        data={data && data?.pages?.reduce((acc, item) => [...acc, ...item.result], [])}
         isLoading={isLoading || isFetching}
         tabValue={tabValue}
         tabOnChange={handleTableValue}
