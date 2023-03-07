@@ -1,8 +1,21 @@
+import PropTypes from 'prop-types'
 import { Box, Typography, Stack } from '@mui/material'
 import { Card, TitleData } from '@/components'
 
-const markNumber = 12.5
-function FavorabilityCard() {
+const FavorabilityCardPropTypes = {
+  data: PropTypes.shape({
+    data: PropTypes.arrayOf(PropTypes.shape({
+      senti: PropTypes.string,
+      g: PropTypes.arrayOf(PropTypes.number),
+      pc: PropTypes.string,
+      t: PropTypes.number,
+    })),
+    date: PropTypes.arrayOf(PropTypes.string),
+    grow: PropTypes.string,
+    pn: PropTypes.number,
+  }),
+}
+function FavorabilityCard({ data }) {
   return (
     <Card
       title={(
@@ -16,7 +29,7 @@ function FavorabilityCard() {
           justifyContent: 'space-between',
         }}
         >
-          <TitleData markNumber={markNumber} unit="percentage" title="好感度" />
+          <TitleData markNumber={data.grow} value={data.pn} unit="percentage" title="好感度" />
           <Stack
             direction={{
               xs: 'column',
@@ -58,7 +71,7 @@ function FavorabilityCard() {
                   fontSize: '3rem',
                 }}
               >
-                2,028
+                {data.data[0].t}
               </Typography>
               <Typography
                 variant="h4"
@@ -87,7 +100,7 @@ function FavorabilityCard() {
                   fontSize: '3rem',
                 }}
               >
-                2,510
+                {data.data[2].t}
               </Typography>
               <Typography
                 variant="h4"
@@ -106,6 +119,6 @@ function FavorabilityCard() {
   )
 }
 
-FavorabilityCard.propTypes = {}
+FavorabilityCard.propTypes = FavorabilityCardPropTypes
 
 export default FavorabilityCard
