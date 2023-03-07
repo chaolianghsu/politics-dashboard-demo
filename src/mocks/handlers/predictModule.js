@@ -12,6 +12,8 @@ const predictModuleAPIs = [
         {
           date: '2023/01/22 ~ 2023/02/21',
           update: '2023/02/21',
+          name: '羅智強',
+          image: 'http://35.234.54.82/media/image/羅智強.png',
           vol: {
             total: 41762,
             grow: '8.92',

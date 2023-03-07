@@ -20,7 +20,12 @@ import {
   LoadingProgress,
 } from '@/components'
 import { useGlobalDateStore } from '@/store'
-import { volumeAPI, reputationAPI, favorabilityAPI } from '@/apis'
+import {
+  volumeAPI,
+  reputationAPI,
+  favorabilityAPI,
+  predictModuleAPI,
+} from '@/apis'
 
 function ReputationSectionOne() {
   const navigate = useNavigate()
@@ -34,6 +39,20 @@ function ReputationSectionOne() {
 
   const formattedDateStart = dateFormat(startDate, 'yyyymmdd')
   const formattedDateEnd = dateFormat(endDate, 'yyyymmdd')
+
+  const {
+    data: predictionData,
+    isLoading: isGetPredictionLoading,
+    isFetching: isGetPredictionFetching,
+  } = useQuery({
+    queryKey: [predictModuleAPI.Url, formattedDateStart, formattedDateEnd],
+    queryFn: () => predictModuleAPI.getData({
+      from: formattedDateStart,
+      to: formattedDateEnd,
+    }),
+    select: (d) => d.result[0],
+  })
+
   const {
     data: reputationData,
     isLoading: isGetReputationDataLoading,
@@ -68,7 +87,9 @@ function ReputationSectionOne() {
   })
 
   if (
-    isGetVolumeDataLoading
+    isGetPredictionLoading
+    || isGetPredictionFetching
+    || isGetVolumeDataLoading
     || isGetVolumeDataFetching
     || isGetReputationDataLoading
     || isGetReputationDataFetching
@@ -84,12 +105,14 @@ function ReputationSectionOne() {
     data: favorabilityDataRaw,
   } = favorabilityData
 
-  const sentiments = favorabilityDataRaw.filter((sen) => sen.senti !== '中立').map((sen) => ({
-    name: `${sen.senti.split('')[0]}評`,
-    value: sen.t,
-    percent: sen.pc,
-    color: sen.senti === '正面' ? '#8E9EE3' : '#1BFBE4',
-  }))
+  const sentiments = favorabilityDataRaw
+    .filter((sen) => sen.senti !== '中立')
+    .map((sen) => ({
+      name: `${sen.senti.split('')[0]}評`,
+      value: sen.t,
+      percent: sen.pc,
+      color: sen.senti === '正面' ? '#8E9EE3' : '#1BFBE4',
+    }))
 
   const {
     total: volumeTotal,
@@ -110,7 +133,7 @@ function ReputationSectionOne() {
                 spacing={1}
               >
                 <Avatar
-                  src="https://images.alphacoders.com/443/443870.jpg"
+                  src={predictionData.image}
                   sx={{
                     width: 140,
                     height: 140,
@@ -119,16 +142,8 @@ function ReputationSectionOne() {
                   }}
                 />
                 <Typography variant="h5" sx={{ fontSize: '2.2rem' }}>
-                  羅智強
+                  {predictionData.name}
                 </Typography>
-                <Stack alignItems="center" sx={{ color: 'customBlue.main' }}>
-                  <Typography variant="body1" sx={{ fontSize: '1.4rem' }}>
-                    台北市
-                  </Typography>
-                  <Typography variant="body1" sx={{ fontSize: '1.4rem' }}>
-                    政黨：中國國民黨
-                  </Typography>
-                </Stack>
               </Stack>
             </CardContent>
           </Card>
