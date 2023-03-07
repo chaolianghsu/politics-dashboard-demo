@@ -18,7 +18,17 @@ const TabPropTypes = {
 
 function Tab({ tabValue, tabOnChange, tabNames }) {
   return (
-    <MuiTabs value={tabValue} onChange={tabOnChange}>
+    <MuiTabs
+      value={tabValue}
+      onChange={tabOnChange}
+      indicatorColor=""
+      sx={{
+        '& .MuiTabs-flexContainer': {
+          overflow: 'auto hidden',
+          width: '100%',
+        },
+      }}
+    >
       {tabNames.map((item) => <CustomTab label={item} key={item} />)}
     </MuiTabs>
   )
