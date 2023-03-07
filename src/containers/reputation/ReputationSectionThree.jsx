@@ -34,7 +34,11 @@ function ReputationSectionThree() {
   })
 
   if (isLoading || isFetching) {
-    return <LoadingProgress />
+    return (
+      <Box sx={{ marginTop: (theme) => (-2 * theme.spacing) }}>
+        <LoadingProgress />
+      </Box>
+    )
   }
 
   const { categories } = data.social_touch

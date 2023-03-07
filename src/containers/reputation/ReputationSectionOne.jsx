@@ -96,7 +96,11 @@ function ReputationSectionOne() {
     || isGetFavorabilityDataLoading
     || isGetFavorabilityDataFetching
   ) {
-    return <LoadingProgress />
+    return (
+      <Box sx={{ marginTop: (theme) => (-2 * theme.spacing) }}>
+        <LoadingProgress />
+      </Box>
+    )
   }
 
   const {
