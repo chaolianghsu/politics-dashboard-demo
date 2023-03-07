@@ -109,15 +109,20 @@ function PostListCard({
             getRowId={Math.random}
           />
         </Box>
-        <BlueButton
-          sx={{
-            position: 'absolute', bottom: '-1.5rem', left: '50%', transform: 'translateX(-50%)',
-          }}
-          disabled={isNoMoreData}
-          onClick={handleQueryPage}
-        >
-          載入更多
-        </BlueButton>
+        {handleQueryPage && (
+          <BlueButton
+            sx={{
+              position: 'absolute',
+              bottom: '-1.5rem',
+              left: '50%',
+              transform: 'translateX(-50%)',
+            }}
+            disabled={isNoMoreData}
+            onClick={handleQueryPage}
+          >
+            載入更多
+          </BlueButton>
+        )}
       </CardContent>
     </Card>
   )

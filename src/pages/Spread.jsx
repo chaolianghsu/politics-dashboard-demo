@@ -183,8 +183,8 @@ function Spread() {
         displayDateEnd={displayDateEnd}
         displayDateStart={displayDateStart}
         isLoading={isGetTextListDataLoading || isGetTextListDataFetching}
-        handleQueryPage={fetchNextPage}
-        isNoMoreData={tabValue === 0 ? true : isError}
+        handleQueryPage={tabValue === 0 ? undefined : fetchNextPage}
+        isNoMoreData={isError}
         tabValue={tabValue}
         tabNames={['擴散頻道', '互動強度主文/回文']}
         tabOnChange={handleTableValue}
