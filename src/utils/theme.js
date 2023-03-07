@@ -83,6 +83,10 @@ const theme = createTheme({
     customLightBlue: {
       main: '#1BFBE4',
     },
+    customGridTextBlue: {
+      light: 'rgb(100, 177, 228)',
+      main: 'rgb(0, 127, 201)',
+    },
   },
   components: {
     MuiCssBaseline: {
