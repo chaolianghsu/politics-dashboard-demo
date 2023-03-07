@@ -15,6 +15,7 @@ function LoginForm() {
   const [isRobot, setIsRobot] = useState(true)
   const navigate = useNavigate()
   const recaptchaRef = useRef(null)
+  const [loginError, setLoginError] = useState('')
 
   const {
     register,
@@ -22,7 +23,7 @@ function LoginForm() {
     formState: { errors, isSubmitted },
   } = useForm()
 
-  const { mutate } = useMutation({
+  const { mutate, isLoading } = useMutation({
     mutationFn: getToken,
     onSuccess: (res) => {
       const { access, refresh } = res
@@ -30,6 +31,9 @@ function LoginForm() {
       localStorage.setItem('politics_refresh', refresh)
       axiosInstance.defaults.headers.common.Authorization = `Bearer ${access}`
       navigate('/prediction', { replace: true })
+    },
+    onError: () => {
+      setLoginError('請確認帳號密碼是否正確')
     },
   })
 
@@ -104,6 +108,13 @@ function LoginForm() {
             </Typography>
           )}
         </Box>
+        {!!loginError && (
+        <Typography
+          sx={{ textAlign: 'left', fontSize: '1.2rem', color: '#d32f2f' }}
+        >
+          {loginError}
+        </Typography>
+        )}
         <Button
           variant="contained"
           sx={{
@@ -113,6 +124,7 @@ function LoginForm() {
             fontWeight: 'bold',
           }}
           type="submit"
+          disabled={isLoading}
         >
           登入
         </Button>
