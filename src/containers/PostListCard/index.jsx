@@ -39,6 +39,7 @@ const PostListCardPropTypes = {
   handleQueryPage: PropTypes.func,
   isNoMoreData: PropTypes.bool,
   customColumns: PropTypes.arrayOf(PropTypes.shape({})),
+  dataGridHeight: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
 }
 
 function PostListCard({
@@ -49,10 +50,12 @@ function PostListCard({
   tabOnChange = () => {},
   tabNames = [],
   data = fakeData,
-  displayDateStart = '2023/01/01',
-  displayDateEnd = '2023/02/01',
+  displayDateStart,
+  displayDateEnd,
   isNoMoreData = false,
   customColumns = columns,
+  dataGridHeight = '60rem',
+  ...others
 }) {
   const newColumns = withLikeShare
     ? [
@@ -64,7 +67,8 @@ function PostListCard({
 
   return (
     <Card
-      title={(
+      title={
+        displayDateStart && displayDateEnd && (
         <Stack spacing={1}>
           <Typography
             variant="h4"
@@ -76,7 +80,9 @@ function PostListCard({
             {`${displayDateStart} - ${displayDateEnd}的文章列表`}
           </Typography>
         </Stack>
-      )}
+        )
+      }
+      {...others}
     >
       <CardContent
         sx={{
@@ -87,10 +93,10 @@ function PostListCard({
       >
         <Box
           sx={{
-            height: '60rem',
+            height: dataGridHeight,
             width: '100%',
             backgroundColor: 'customWhite.main',
-            padding: '1rem 1rem 7.5rem 1rem',
+            padding: handleQueryPage ? '1rem 1rem 7.5rem 1rem' : '1rem',
           }}
         >
           {!!tabNames.length && (
