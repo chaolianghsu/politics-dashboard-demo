@@ -1,8 +1,8 @@
 import { Box } from '@mui/material'
 import { Card, TitleData } from '@/components'
+import PropTypes from 'prop-types'
 
-const markNumber = 12.5
-function SpreadCard() {
+function SpreadCard({ diffusionValue, interactionValue }) {
   return (
     <Card
       title={(
@@ -14,14 +14,17 @@ function SpreadCard() {
             flexWrap: 'wrap',
           }}
         >
-          <TitleData markNumber={markNumber} unit="channels" title="擴散廣度" />
-          <TitleData markNumber={markNumber} unit="piece" title="互動強度" />
+          <TitleData value={diffusionValue} unit="channels" title="擴散廣度" />
+          <TitleData value={interactionValue} unit="piece" title="互動強度" />
         </Box>
       )}
     />
   )
 }
 
-SpreadCard.propTypes = {}
+SpreadCard.propTypes = {
+  diffusionValue: PropTypes.number,
+  interactionValue: PropTypes.number,
+}
 
 export default SpreadCard
