@@ -1,12 +1,13 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
+import { addDays } from 'date-fns'
 
 const useGlobalDateStore = create(
   persist(
     (set) => (
       {
-        startDate: new Date(),
-        endDate: new Date(),
+        startDate: addDays(new Date(), -1),
+        endDate: addDays(new Date(), -1),
         update: ({ startDate, endDate }) => set({
           startDate,
           endDate,
