@@ -200,6 +200,7 @@ function AppBar({
                   moveRangeOnFirstSelection={false}
                   staticRanges={ranges}
                   inputRanges={[]}
+                  maxDate={addDays(new Date(), -1)}
                 />
                 <Box sx={{ paddingLeft: '1rem', paddingBottom: '1rem' }}>
                   <Button
