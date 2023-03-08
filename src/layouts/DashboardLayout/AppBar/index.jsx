@@ -85,8 +85,8 @@ function AppBar({
   ]
   const ranges = [...createStaticRanges(timeRanges)]
   const [dateState, setDateState] = useState({
-    startDate: new Date(),
-    endDate: new Date(),
+    startDate: new Date(startDate),
+    endDate: new Date(endDate),
     key: 'selection',
   })
   const handleUserMenuClick = (e) => {
