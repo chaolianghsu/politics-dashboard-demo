@@ -6,7 +6,7 @@ const useGlobalDateStore = create(
   persist(
     (set) => (
       {
-        startDate: addDays(new Date(), -1),
+        startDate: addDays(new Date(), -30),
         endDate: addDays(new Date(), -1),
         update: ({ startDate, endDate }) => set({
           startDate,

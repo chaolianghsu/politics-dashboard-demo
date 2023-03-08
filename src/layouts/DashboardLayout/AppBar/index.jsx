@@ -55,13 +55,6 @@ function AppBar({
   const id = open ? 'simple-popover' : undefined
   const timeRanges = [
     {
-      label: '昨天',
-      range: () => ({
-        startDate: addDays(new Date(), -1),
-        endDate: addDays(new Date(), -1),
-      }),
-    },
-    {
       label: '一週內',
       range: () => ({
         startDate: startOfWeek(new Date()),
@@ -80,6 +73,13 @@ function AppBar({
       range: () => ({
         startDate: startOfWeek(addDays(new Date(), -14)),
         endDate: endOfWeek(addDays(new Date(), -14)),
+      }),
+    },
+    {
+      label: '一個月內',
+      range: () => ({
+        startDate: addDays(new Date(), -30),
+        endDate: addDays(new Date(), -1),
       }),
     },
   ]

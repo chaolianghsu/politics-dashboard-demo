@@ -47,7 +47,7 @@ function Prediction() {
       </Stack>
       <HeaderBar
         text={`${data.name} 指標儀表板`}
-        note="數據調查期間：2023/01/18 ~ 2023/02/17"
+        note={`數據調查期間：${dateFormat(startDate, 'yyyy/mm/dd')} ~ ${dateFormat(endDate, 'yyyy/mm/dd')}`}
         icon={<TrackChangesIcon sx={{ fontSize: '3rem' }} />}
       />
       <PredictionCardGrid data={data} />
