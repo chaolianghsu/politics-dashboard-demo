@@ -43,7 +43,7 @@ axiosInstance.interceptors.response.use(
     const data = await res.data
     localStorage.setItem('politics_access', data.access)
 
-    axiosInstance.defaults.headers.Authorization = `Bearer ${data.access}`
+    axiosInstance.defaults.headers.common.Authorization = `Bearer ${data.access}`
 
     if (originalReq.url === tokenVerifyUrl) {
       return axiosInstance({
