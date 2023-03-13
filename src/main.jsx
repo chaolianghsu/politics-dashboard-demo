@@ -6,7 +6,7 @@ import App from './App'
 import './index.scss'
 
 async function prepare() {
-  if (+process.env.VITE_IS_MOCK_API) {
+  if (!process.env.VITE_API_URL) {
     const { worker } = await import('./mocks/browser')
     worker.start()
   }
