@@ -1,8 +1,8 @@
-import { Outlet } from 'react-router-dom'
+import { Outlet, useLocation } from 'react-router-dom'
 import {
   Drawer, Box, useTheme, useMediaQuery, Typography, Stack,
 } from '@mui/material'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import AppBar from './AppBar'
 import Logo from './Logo'
 import Lists from './Lists'
@@ -13,6 +13,15 @@ const duration = 350
 
 function DashboardLayout() {
   const theme = useTheme()
+  const { pathname } = useLocation()
+
+  // navigate到reputation的子頁面自動滑到最上面
+  useEffect(() => {
+    const el = document.getElementById('outlet')
+    if (el) {
+      el.scrollTop = 0
+    }
+  }, [pathname])
   const [drawerOpen, setDrawerOpen] = useState(true)
   const [mobileOpen, setMobileOpen] = useState(false)
   const isMobile = useMediaQuery(theme.breakpoints.down('md'))
@@ -85,15 +94,17 @@ function DashboardLayout() {
         }}
         id="outlet"
       >
-        <Box sx={{
-          marginTop: '3.4rem',
-          padding: {
-            xs: '0 4px',
-            sm: '0 16px',
-            md: '0 28px',
-          },
-          paddingBottom: '54px',
-        }}
+        <Box
+          id="outlet"
+          sx={{
+            marginTop: '3.4rem',
+            padding: {
+              xs: '0 4px',
+              sm: '0 16px',
+              md: '0 28px',
+            },
+            paddingBottom: '54px',
+          }}
         >
           <Outlet />
         </Box>
