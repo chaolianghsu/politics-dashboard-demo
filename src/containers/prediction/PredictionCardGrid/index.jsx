@@ -27,6 +27,12 @@ function PredictionCardGrid({ data }) {
     }
     return item
   })
+  const scrollConfig = {
+    聲譽值: 'reputation',
+    互動強度: 'interaction',
+    社群互動力: 'section_three',
+    粉絲觸及力: 'section_three',
+  }
   return (
     <Grid container spacing={1}>
       {dataFormat.map((cardContent) => (
@@ -72,7 +78,10 @@ function PredictionCardGrid({ data }) {
                 width={50}
               />
             )}
-            onClick={() => navigate(cardContent.linkTo)}
+            onClick={() => navigate(
+              cardContent.linkTo,
+              { state: { scrollTarget: scrollConfig[cardContent.title] } },
+            )}
           >
             <Typography
               variant="body2"
