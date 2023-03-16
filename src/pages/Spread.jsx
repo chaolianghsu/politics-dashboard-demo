@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { Box, Stack } from '@mui/material'
 import EqualizerIcon from '@mui/icons-material/Equalizer'
 import ReplyIcon from '@mui/icons-material/Reply'
@@ -75,6 +75,8 @@ const formatData = ({ channelData, mainArticleData, replyData }) => channelData.
 
 function Spread() {
   const navigate = useNavigate()
+  const location = useLocation()
+  const tabName = location?.state?.scrollTarget
 
   const { startDate, endDate } = useGlobalDateStore(
     (state) => ({
@@ -83,7 +85,8 @@ function Spread() {
     }),
     shallow,
   )
-  const [tabValue, setTabValue] = useState(0)
+  const [tabValue, setTabValue] = useState(tabName === 'interaction' ? 1 : 0)
+
   const formattedDateStart = dateFormat(startDate, 'yyyymmdd')
   const formattedDateEnd = dateFormat(endDate, 'yyyymmdd')
   const displayDateStart = dateFormat(startDate, 'yyyy/mm/dd')
