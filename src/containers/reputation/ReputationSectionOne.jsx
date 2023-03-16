@@ -6,7 +6,8 @@ import {
   Box,
   Unstable_Grid2 as Grid,
 } from '@mui/material'
-import { useNavigate } from 'react-router-dom'
+import { useEffect } from 'react'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { shallow } from 'zustand/shallow'
 import dateFormat from 'dateformat'
@@ -29,6 +30,18 @@ import {
 
 function ReputationSectionOne() {
   const navigate = useNavigate()
+  const location = useLocation()
+  const scrollId = location?.state?.scrollTarget
+  useEffect(() => {
+    if (scrollId) {
+      const el = document.getElementById(scrollId)
+      if (el) {
+        el.scrollIntoView()
+        window.scrollBy(0, -100)
+      }
+    }
+  }, [scrollId])
+
   const { startDate, endDate } = useGlobalDateStore(
     (state) => ({
       startDate: state.startDate,
@@ -152,6 +165,7 @@ function ReputationSectionOne() {
             </CardContent>
           </Card>
           <Card
+            id="reputation"
             title={(
               <Box
                 sx={{
