@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import {
   Typography, Stack, Unstable_Grid2 as Grid, Box,
 } from '@mui/material'
@@ -20,15 +20,13 @@ import { socialAPI } from '@/apis'
 function ReputationSectionThree() {
   const location = useLocation()
   const scrollId = location?.state?.scrollTarget
+  const ref = useRef(null)
   useEffect(() => {
-    if (scrollId) {
-      const el = document.getElementById(scrollId)
-      if (el) {
-        el.scrollIntoView()
-        window.scrollBy(0, -100)
-      }
+    if (scrollId === 'section_three' && ref.current) {
+      ref.current.scrollIntoView()
+      window.scrollTo({ top: -100 })
     }
-  }, [scrollId])
+  }, [scrollId, ref])
   const { startDate, endDate } = useGlobalDateStore(
     (state) => ({
       startDate: state.startDate,
@@ -82,7 +80,7 @@ function ReputationSectionThree() {
     like: likeCount,
   } = socialReactionCountRatio
   return (
-    <Box id="section_three" sx={{ padding: '1rem' }}>
+    <Box ref={ref} sx={{ padding: '1rem' }}>
       <Card title={<Typography variant="h4">社群經營力</Typography>}>
         <Grid container spacing={2} sx={{ padding: '1rem' }}>
           <Grid xs={12} md={6} lg={4}>

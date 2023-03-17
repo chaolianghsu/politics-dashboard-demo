@@ -1,8 +1,8 @@
+import { useState, useEffect, useRef } from 'react'
 import { Outlet, useLocation } from 'react-router-dom'
 import {
   Drawer, Box, useTheme, useMediaQuery, Typography, Stack,
 } from '@mui/material'
-import { useState, useEffect } from 'react'
 import AppBar from './AppBar'
 import Logo from './Logo'
 import Lists from './Lists'
@@ -14,12 +14,11 @@ const duration = 350
 function DashboardLayout() {
   const theme = useTheme()
   const { pathname } = useLocation()
-
+  const ref = useRef(null)
   // navigate到reputation的子頁面自動滑到最上面
   useEffect(() => {
-    const el = document.getElementById('outlet')
-    if (el) {
-      el.scrollTop = 0
+    if (ref.current) {
+      ref.current.scrollTop = 0
     }
   }, [pathname])
   const [drawerOpen, setDrawerOpen] = useState(true)
@@ -85,6 +84,7 @@ function DashboardLayout() {
         </Drawer>
       </Box>
       <Stack
+        ref={ref}
         sx={{
           ml: drawerOpen ? `${drawerWidth}px` : 0,
           mt: `${topBarHeight}px`,
@@ -92,10 +92,8 @@ function DashboardLayout() {
           overflowY: 'scroll',
           height: `calc(100% - ${topBarHeight}px)`,
         }}
-        id="outlet"
       >
         <Box
-          id="outlet"
           sx={{
             marginTop: '3.4rem',
             padding: {
