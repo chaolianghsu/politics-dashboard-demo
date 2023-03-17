@@ -23,6 +23,7 @@ function ReputationSectionThree() {
   const ref = useRef(null)
   useEffect(() => {
     if (scrollId === 'section_three' && ref.current) {
+      console.log('scroll to section three')
       ref.current.scrollIntoView({ block: 'end' })
     }
   }, [scrollId, ref])
