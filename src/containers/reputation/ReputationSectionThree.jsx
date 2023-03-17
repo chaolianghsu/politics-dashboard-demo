@@ -23,8 +23,7 @@ function ReputationSectionThree() {
   const ref = useRef(null)
   useEffect(() => {
     if (scrollId === 'section_three' && ref.current) {
-      ref.current.scrollIntoView()
-      window.scrollTo({ top: -100 })
+      ref.current.scrollIntoView({ block: 'end' })
     }
   }, [scrollId, ref])
   const { startDate, endDate } = useGlobalDateStore(
