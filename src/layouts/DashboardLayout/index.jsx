@@ -13,14 +13,11 @@ const duration = 350
 
 function DashboardLayout() {
   const theme = useTheme()
-  const { pathname } = useLocation()
+  const location = useLocation()
+  const scrollId = location?.state?.scrollTarget
+
   const ref = useRef(null)
-  // navigate到reputation的子頁面自動滑到最上面
-  useEffect(() => {
-    if (ref.current) {
-      ref.current.scrollTop = 0
-    }
-  }, [pathname])
+
   const [drawerOpen, setDrawerOpen] = useState(true)
   const [mobileOpen, setMobileOpen] = useState(false)
   const isMobile = useMediaQuery(theme.breakpoints.down('md'))
@@ -29,7 +26,19 @@ function DashboardLayout() {
   const handleMobileDrawerToggle = () => {
     setMobileOpen(!mobileOpen)
   }
-
+  // navigate到reputation的子頁面自動滑到最上面
+  useEffect(() => {
+    if (ref.current) {
+      if (scrollId === 'section_three') {
+        ref.current.scrollTop = isMobile ? 3500 : 5000
+        return
+      } if (scrollId === 'reputation') {
+        ref.current.scrollTop = 189
+        return
+      }
+      ref.current.scrollTop = 0
+    }
+  }, [scrollId, isMobile])
   const toggleDrawer = () => {
     setTimeout(() => {
       window.dispatchEvent(new Event('resize'))
@@ -84,7 +93,6 @@ function DashboardLayout() {
         </Drawer>
       </Box>
       <Stack
-        ref={ref}
         sx={{
           ml: drawerOpen ? `${drawerWidth}px` : 0,
           mt: `${topBarHeight}px`,
@@ -92,6 +100,7 @@ function DashboardLayout() {
           overflowY: 'scroll',
           height: `calc(100% - ${topBarHeight}px)`,
         }}
+        ref={ref}
       >
         <Box
           sx={{
