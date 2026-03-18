@@ -17,7 +17,11 @@
 | File | Action | Responsibility |
 |------|--------|---------------|
 | `src/utils/isDemoMode.js` | Create | Single boolean export for demo mode check |
+| `src/__test__/isDemoMode.test.js` | Create | TDD test for isDemoMode utility |
 | `src/components/FakeRecaptcha.jsx` | Create | Visual clone of Google reCAPTCHA v2 checkbox |
+| `src/__test__/FakeRecaptcha.test.jsx` | Create | TDD test for FakeRecaptcha component |
+| `src/__test__/LoginForm.test.jsx` | Create | TDD test for LoginForm demo/normal reCAPTCHA swap |
+| `src/__test__/authHandler.test.js` | Create | TDD test for DEMO_ACCOUNTS mock auth handler |
 | `src/main.jsx` | Modify | MSW startup condition + serviceWorker.url |
 | `src/containers/login/LoginForm.jsx` | Modify | Swap real/fake reCAPTCHA based on isDemoMode |
 | `src/mocks/handlers/auth.js` | Modify | DEMO_ACCOUNTS map + preserve admin/admin |
@@ -33,11 +37,50 @@
 ### Task 1: isDemoMode Utility + Environment Config
 
 **Files:**
+- Create: `src/__test__/isDemoMode.test.js`
 - Create: `src/utils/isDemoMode.js`
 - Modify: `.env.example`
 - Modify: `.gitignore`
 
-- [ ] **Step 1: Create isDemoMode utility**
+- [ ] **Step 1: RED — Write failing test for isDemoMode**
+
+Create `src/__test__/isDemoMode.test.js`:
+```js
+describe('isDemoMode', () => {
+  const originalEnv = process.env
+
+  afterEach(() => {
+    process.env = originalEnv
+    jest.resetModules()
+  })
+
+  it('returns true when VITE_DEMO_MODE is "true"', async () => {
+    process.env = { ...originalEnv, VITE_DEMO_MODE: 'true' }
+    const { isDemoMode } = await import('@/utils/isDemoMode')
+    expect(isDemoMode).toBe(true)
+  })
+
+  it('returns false when VITE_DEMO_MODE is empty', async () => {
+    process.env = { ...originalEnv, VITE_DEMO_MODE: '' }
+    const { isDemoMode } = await import('@/utils/isDemoMode')
+    expect(isDemoMode).toBe(false)
+  })
+
+  it('returns false when VITE_DEMO_MODE is undefined', async () => {
+    process.env = { ...originalEnv }
+    delete process.env.VITE_DEMO_MODE
+    const { isDemoMode } = await import('@/utils/isDemoMode')
+    expect(isDemoMode).toBe(false)
+  })
+})
+```
+
+- [ ] **Step 2: Run test — verify RED**
+
+Run: `yarn test --watchAll=false --testPathPattern=isDemoMode`
+Expected: FAIL — `Cannot find module '@/utils/isDemoMode'`
+
+- [ ] **Step 3: GREEN — Create isDemoMode utility**
 
 Create `src/utils/isDemoMode.js`:
 ```js
@@ -45,7 +88,12 @@ Create `src/utils/isDemoMode.js`:
 export const isDemoMode = process.env.VITE_DEMO_MODE === 'true'
 ```
 
-- [ ] **Step 2: Update .env.example**
+- [ ] **Step 4: Run test — verify GREEN**
+
+Run: `yarn test --watchAll=false --testPathPattern=isDemoMode`
+Expected: PASS — all 3 tests pass
+
+- [ ] **Step 5: Update .env.example**
 
 Replace the full content of `.env.example` with:
 ```
@@ -61,7 +109,7 @@ VITE_DEMO_MODE=
 VITE_BASE_PATH=
 ```
 
-- [ ] **Step 3: Add .superpowers/ to .gitignore**
+- [ ] **Step 6: Add .superpowers/ to .gitignore**
 
 Append to `.gitignore`:
 ```
@@ -69,11 +117,11 @@ Append to `.gitignore`:
 .superpowers/
 ```
 
-- [ ] **Step 4: Commit**
+- [ ] **Step 7: Commit**
 
 ```bash
-git add src/utils/isDemoMode.js .env.example .gitignore
-git commit -m "feat: add isDemoMode utility and env config for demo mode"
+git add src/__test__/isDemoMode.test.js src/utils/isDemoMode.js .env.example .gitignore
+git commit -m "feat: add isDemoMode utility with tests and env config"
 ```
 
 ---
@@ -81,9 +129,50 @@ git commit -m "feat: add isDemoMode utility and env config for demo mode"
 ### Task 2: FakeRecaptcha Component
 
 **Files:**
+- Create: `src/__test__/FakeRecaptcha.test.jsx`
 - Create: `src/components/FakeRecaptcha.jsx`
 
-- [ ] **Step 1: Create FakeRecaptcha component**
+- [ ] **Step 1: RED — Write failing test for FakeRecaptcha**
+
+Create `src/__test__/FakeRecaptcha.test.jsx`:
+```jsx
+import { render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+import FakeRecaptcha from '@/components/FakeRecaptcha'
+
+describe('FakeRecaptcha', () => {
+  it('renders「我不是機器人」label', () => {
+    render(<FakeRecaptcha onChange={() => {}} />)
+    expect(screen.getByText('我不是機器人')).toBeInTheDocument()
+  })
+
+  it('calls onChange when clicked', async () => {
+    const user = userEvent.setup()
+    const handleChange = jest.fn()
+    render(<FakeRecaptcha onChange={handleChange} />)
+
+    await user.click(screen.getByText('我不是機器人'))
+    expect(handleChange).toHaveBeenCalledTimes(1)
+  })
+
+  it('does not call onChange on second click', async () => {
+    const user = userEvent.setup()
+    const handleChange = jest.fn()
+    render(<FakeRecaptcha onChange={handleChange} />)
+
+    await user.click(screen.getByText('我不是機器人'))
+    await user.click(screen.getByText('我不是機器人'))
+    expect(handleChange).toHaveBeenCalledTimes(1)
+  })
+})
+```
+
+- [ ] **Step 2: Run test — verify RED**
+
+Run: `yarn test --watchAll=false --testPathPattern=FakeRecaptcha`
+Expected: FAIL — `Cannot find module '@/components/FakeRecaptcha'`
+
+- [ ] **Step 3: GREEN — Create FakeRecaptcha component**
 
 Create `src/components/FakeRecaptcha.jsx`:
 ```jsx
@@ -180,11 +269,16 @@ FakeRecaptcha.propTypes = {
 export default FakeRecaptcha
 ```
 
-- [ ] **Step 2: Commit**
+- [ ] **Step 4: Run test — verify GREEN**
+
+Run: `yarn test --watchAll=false --testPathPattern=FakeRecaptcha`
+Expected: PASS — all 3 tests pass
+
+- [ ] **Step 5: Commit**
 
 ```bash
-git add src/components/FakeRecaptcha.jsx
-git commit -m "feat: add FakeRecaptcha component for demo mode"
+git add src/__test__/FakeRecaptcha.test.jsx src/components/FakeRecaptcha.jsx
+git commit -m "feat: add FakeRecaptcha component with tests"
 ```
 
 ---
@@ -192,9 +286,58 @@ git commit -m "feat: add FakeRecaptcha component for demo mode"
 ### Task 3: LoginForm — Swap reCAPTCHA in Demo Mode
 
 **Files:**
+- Create: `src/__test__/LoginForm.test.jsx`
 - Modify: `src/containers/login/LoginForm.jsx`
 
-- [ ] **Step 1: Add imports**
+- [ ] **Step 1: RED — Write failing test for LoginForm demo mode**
+
+Create `src/__test__/LoginForm.test.jsx`:
+```jsx
+import { render, screen } from '@testing-library/react'
+import { MemoryRouter } from 'react-router-dom'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+
+// Must mock isDemoMode before importing LoginForm
+jest.mock('@/utils/isDemoMode', () => ({
+  isDemoMode: true,
+}))
+
+// Mock react-google-recaptcha to make it detectable
+jest.mock('react-google-recaptcha', () => function MockReCAPTCHA() {
+  return <div data-testid="real-recaptcha">Real reCAPTCHA</div>
+})
+
+import LoginForm from '@/containers/login/LoginForm'
+
+const queryClient = new QueryClient({
+  defaultOptions: { queries: { retry: false } },
+})
+
+function renderLoginForm() {
+  return render(
+    <QueryClientProvider client={queryClient}>
+      <MemoryRouter>
+        <LoginForm />
+      </MemoryRouter>
+    </QueryClientProvider>,
+  )
+}
+
+describe('LoginForm in demo mode', () => {
+  it('renders FakeRecaptcha instead of real reCAPTCHA', () => {
+    renderLoginForm()
+    expect(screen.getByText('我不是機器人')).toBeInTheDocument()
+    expect(screen.queryByTestId('real-recaptcha')).not.toBeInTheDocument()
+  })
+})
+```
+
+- [ ] **Step 2: Run test — verify RED**
+
+Run: `yarn test --watchAll=false --testPathPattern=LoginForm`
+Expected: FAIL — LoginForm still renders real reCAPTCHA (no `isDemoMode` conditional yet)
+
+- [ ] **Step 3: GREEN — Add imports and conditional reCAPTCHA**
 
 At the top of `src/containers/login/LoginForm.jsx`, add after the existing imports:
 ```jsx
@@ -202,9 +345,7 @@ import { isDemoMode } from '@/utils/isDemoMode'
 import FakeRecaptcha from '@/components/FakeRecaptcha'
 ```
 
-- [ ] **Step 2: Replace reCAPTCHA block**
-
-In `LoginForm.jsx`, replace lines 96-110 (the `<Box>` wrapping `<ReCAPTCHA>`):
+Then replace lines 96-110 (the `<Box>` wrapping `<ReCAPTCHA>`):
 
 Before:
 ```jsx
@@ -248,16 +389,21 @@ After:
         </Box>
 ```
 
-- [ ] **Step 3: Run lint to verify**
+- [ ] **Step 4: Run test — verify GREEN**
 
-Run: `cd /Users/admin/Projects/Politics\ dashboard/politics-dashboard-2023 && yarn lint`
-Expected: No errors related to LoginForm.jsx
+Run: `yarn test --watchAll=false --testPathPattern=LoginForm`
+Expected: PASS
 
-- [ ] **Step 4: Commit**
+- [ ] **Step 5: Run lint**
+
+Run: `yarn lint`
+Expected: No errors
+
+- [ ] **Step 6: Commit**
 
 ```bash
-git add src/containers/login/LoginForm.jsx
-git commit -m "feat: swap reCAPTCHA for FakeRecaptcha in demo mode"
+git add src/__test__/LoginForm.test.jsx src/containers/login/LoginForm.jsx
+git commit -m "feat: swap reCAPTCHA for FakeRecaptcha in demo mode with tests"
 ```
 
 ---
@@ -265,9 +411,50 @@ git commit -m "feat: swap reCAPTCHA for FakeRecaptcha in demo mode"
 ### Task 4: Mock Auth Handler — DEMO_ACCOUNTS
 
 **Files:**
+- Create: `src/__test__/authHandler.test.js`
 - Modify: `src/mocks/handlers/auth.js`
 
-- [ ] **Step 1: Update auth handler with DEMO_ACCOUNTS**
+- [ ] **Step 1: RED — Write failing test for DEMO_ACCOUNTS auth**
+
+Create `src/__test__/authHandler.test.js`:
+```js
+import { getToken } from '@/apis/source/auth'
+
+// MSW server is already started in setupTests.js
+
+describe('Mock Auth Handler — DEMO_ACCOUNTS', () => {
+  it('allows login with demo@dailyview.tw / demo123', async () => {
+    const res = await getToken({ email: 'demo@dailyview.tw', password: 'demo123' })
+    expect(res).toHaveProperty('access')
+    expect(res).toHaveProperty('refresh')
+  })
+
+  it('allows login with admin / admin (dev account preserved)', async () => {
+    const res = await getToken({ email: 'admin', password: 'admin' })
+    expect(res).toHaveProperty('access')
+    expect(res).toHaveProperty('refresh')
+  })
+
+  it('rejects wrong password', async () => {
+    await expect(
+      getToken({ email: 'demo@dailyview.tw', password: 'wrong' }),
+    ).rejects.toThrow()
+  })
+
+  it('rejects unknown account', async () => {
+    await expect(
+      getToken({ email: 'unknown@test.com', password: 'test' }),
+    ).rejects.toThrow()
+  })
+})
+```
+
+- [ ] **Step 2: Run test — verify RED**
+
+Run: `yarn test --watchAll=false --testPathPattern=authHandler`
+Expected: FAIL — `demo@dailyview.tw` login rejected (current handler only accepts `admin/admin`)
+
+- [ ] **Step 3: GREEN — Update auth handler with DEMO_ACCOUNTS**
 
 Replace the full content of `src/mocks/handlers/auth.js`:
 ```js
@@ -343,16 +530,21 @@ const authAPIs = [
 export default authAPIs
 ```
 
-- [ ] **Step 2: Run tests to verify nothing broke**
+- [ ] **Step 4: Run test — verify GREEN**
 
-Run: `cd /Users/admin/Projects/Politics\ dashboard/politics-dashboard-2023 && yarn test --watchAll=false`
-Expected: All tests pass
+Run: `yarn test --watchAll=false --testPathPattern=authHandler`
+Expected: PASS — all 4 tests pass
 
-- [ ] **Step 3: Commit**
+- [ ] **Step 5: Run all tests**
+
+Run: `yarn test --watchAll=false`
+Expected: All tests pass (no regressions)
+
+- [ ] **Step 6: Commit**
 
 ```bash
-git add src/mocks/handlers/auth.js
-git commit -m "feat: add DEMO_ACCOUNTS mapping to mock auth handler"
+git add src/__test__/authHandler.test.js src/mocks/handlers/auth.js
+git commit -m "feat: add DEMO_ACCOUNTS mapping to mock auth handler with tests"
 ```
 
 ---
