@@ -2,10 +2,16 @@ import { rest } from 'msw'
 import { authAPI, baseUrl } from '@/apis'
 import { genToken, tokenValidation } from '../utils/token'
 
+const DEMO_ACCOUNTS = {
+  admin: { password: 'admin', dataset: 'default' },
+  'demo@dailyview.tw': { password: 'demo123', dataset: 'default' },
+}
+
 const authAPIs = [
   rest.post(`${baseUrl}${authAPI.Url}`, async (req, res, ctx) => {
     const { email, password } = await req.json()
-    if (email !== 'admin' || password !== 'admin') {
+    const account = DEMO_ACCOUNTS[email]
+    if (!account || account.password !== password) {
       return res(
         ctx.status(401),
         ctx.json({
