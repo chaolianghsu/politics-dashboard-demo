@@ -1,0 +1,636 @@
+# Presale Demo Mode Implementation Plan
+
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+
+**Goal:** Add an environment-variable-driven demo mode so sales can deploy a self-contained demo site to GitHub Pages using MSW mock data.
+
+**Architecture:** A single flag `VITE_DEMO_MODE=true` activates demo behavior: MSW intercepts all API calls, a fake reCAPTCHA replaces the real one, and a `DEMO_ACCOUNTS` map in the MSW auth handler controls login. `VITE_BASE_PATH` handles GitHub Pages subpath routing. No backend required.
+
+**Tech Stack:** React 18, Vite 4, MUI v5, MSW v1, React Router v6, React Hook Form, vite-plugin-environment
+
+**Spec:** `docs/superpowers/specs/2026-03-18-presale-demo-design.md`
+
+---
+
+## File Structure
+
+| File | Action | Responsibility |
+|------|--------|---------------|
+| `src/utils/isDemoMode.js` | Create | Single boolean export for demo mode check |
+| `src/components/FakeRecaptcha.jsx` | Create | Visual clone of Google reCAPTCHA v2 checkbox |
+| `src/main.jsx` | Modify | MSW startup condition + serviceWorker.url |
+| `src/containers/login/LoginForm.jsx` | Modify | Swap real/fake reCAPTCHA based on isDemoMode |
+| `src/mocks/handlers/auth.js` | Modify | DEMO_ACCOUNTS map + preserve admin/admin |
+| `src/routes/index.jsx` | Modify | BrowserRouter basename from VITE_BASE_PATH |
+| `vite.config.js` | Modify | Dynamic `base` from VITE_BASE_PATH |
+| `public/mockServiceWorker.js` | Copy | MSW service worker in Vite public dir |
+| `.env.example` | Modify | Document new env vars |
+| `.github/workflows/deploy-demo.yml` | Create | GitHub Pages auto-deploy on demo branch |
+| `.gitignore` | Modify | Add .superpowers/ |
+
+---
+
+### Task 1: isDemoMode Utility + Environment Config
+
+**Files:**
+- Create: `src/utils/isDemoMode.js`
+- Modify: `.env.example`
+- Modify: `.gitignore`
+
+- [ ] **Step 1: Create isDemoMode utility**
+
+Create `src/utils/isDemoMode.js`:
+```js
+// vite-plugin-environment exposes env vars as process.env.*
+export const isDemoMode = process.env.VITE_DEMO_MODE === 'true'
+```
+
+- [ ] **Step 2: Update .env.example**
+
+Replace the full content of `.env.example` with:
+```
+# API URL
+# 留空即為 mock api，或是根據要使用的 api url 填寫，可參考如下
+# 正式：https://api-taitung.keypo.tw, 測試：http://35.234.54.82
+VITE_API_URL=
+
+# Demo mode — set to 'true' to enable MSW mock data + fake reCAPTCHA
+VITE_DEMO_MODE=
+
+# Base path for deployment (e.g. '/politics-dashboard-2023/' for GitHub Pages)
+VITE_BASE_PATH=
+```
+
+- [ ] **Step 3: Add .superpowers/ to .gitignore**
+
+Append to `.gitignore`:
+```
+# superpowers brainstorm files
+.superpowers/
+```
+
+- [ ] **Step 4: Commit**
+
+```bash
+git add src/utils/isDemoMode.js .env.example .gitignore
+git commit -m "feat: add isDemoMode utility and env config for demo mode"
+```
+
+---
+
+### Task 2: FakeRecaptcha Component
+
+**Files:**
+- Create: `src/components/FakeRecaptcha.jsx`
+
+- [ ] **Step 1: Create FakeRecaptcha component**
+
+Create `src/components/FakeRecaptcha.jsx`:
+```jsx
+import { useState } from 'react'
+import { Box } from '@mui/material'
+import PropTypes from 'prop-types'
+
+function FakeRecaptcha({ onChange }) {
+  const [checked, setChecked] = useState(false)
+
+  const handleClick = () => {
+    if (checked) return
+    setChecked(true)
+    if (onChange) onChange('fake-recaptcha-token')
+  }
+
+  return (
+    <Box
+      onClick={handleClick}
+      sx={{
+        display: 'flex',
+        alignItems: 'center',
+        border: '1px solid #d3d3d3',
+        borderRadius: '3px',
+        backgroundColor: '#f9f9f9',
+        padding: '12px 16px',
+        cursor: checked ? 'default' : 'pointer',
+        userSelect: 'none',
+        height: '74px',
+        boxSizing: 'border-box',
+      }}
+    >
+      {/* Checkbox */}
+      <Box
+        sx={{
+          width: '28px',
+          height: '28px',
+          border: checked ? 'none' : '2px solid #c1c1c1',
+          borderRadius: '2px',
+          backgroundColor: checked ? '#4caf50' : 'white',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          marginRight: '12px',
+          flexShrink: 0,
+          transition: 'all 0.2s ease',
+        }}
+      >
+        {checked && (
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+            <path
+              d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"
+              fill="white"
+            />
+          </svg>
+        )}
+      </Box>
+
+      {/* Label */}
+      <Box sx={{ fontSize: '14px', color: '#333', flexGrow: 1 }}>
+        我不是機器人
+      </Box>
+
+      {/* reCAPTCHA branding */}
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          fontSize: '10px',
+          color: '#555',
+          lineHeight: 1.2,
+        }}
+      >
+        <Box
+          component="img"
+          src="https://www.gstatic.com/recaptcha/api2/logo_48.png"
+          alt="reCAPTCHA"
+          sx={{ width: '32px', height: '32px', marginBottom: '2px' }}
+          onError={(e) => {
+            e.target.style.display = 'none'
+          }}
+        />
+        <span>reCAPTCHA</span>
+      </Box>
+    </Box>
+  )
+}
+
+FakeRecaptcha.propTypes = {
+  onChange: PropTypes.func.isRequired,
+}
+
+export default FakeRecaptcha
+```
+
+- [ ] **Step 2: Commit**
+
+```bash
+git add src/components/FakeRecaptcha.jsx
+git commit -m "feat: add FakeRecaptcha component for demo mode"
+```
+
+---
+
+### Task 3: LoginForm — Swap reCAPTCHA in Demo Mode
+
+**Files:**
+- Modify: `src/containers/login/LoginForm.jsx`
+
+- [ ] **Step 1: Add imports**
+
+At the top of `src/containers/login/LoginForm.jsx`, add after the existing imports:
+```jsx
+import { isDemoMode } from '@/utils/isDemoMode'
+import FakeRecaptcha from '@/components/FakeRecaptcha'
+```
+
+- [ ] **Step 2: Replace reCAPTCHA block**
+
+In `LoginForm.jsx`, replace lines 96-110 (the `<Box>` wrapping `<ReCAPTCHA>`):
+
+Before:
+```jsx
+        <Box sx={{ '&>div': { width: '100%' } }}>
+          <ReCAPTCHA
+            onChange={handleOnRecaptchChange}
+            ref={recaptchaRef}
+            sitekey="6LcP1KckAAAAADlDotybpQJI2Ouzp8uj1jMffpS3"
+            hl="zh-TW"
+          />
+          {isSubmitted && isRobot && (
+            <Typography
+              sx={{ textAlign: 'left', fontSize: '1.2rem', color: '#d32f2f' }}
+            >
+              請進行驗證
+            </Typography>
+          )}
+        </Box>
+```
+
+After:
+```jsx
+        <Box sx={{ '&>div': { width: '100%' } }}>
+          {isDemoMode ? (
+            <FakeRecaptcha onChange={handleOnRecaptchChange} />
+          ) : (
+            <ReCAPTCHA
+              onChange={handleOnRecaptchChange}
+              ref={recaptchaRef}
+              sitekey="6LcP1KckAAAAADlDotybpQJI2Ouzp8uj1jMffpS3"
+              hl="zh-TW"
+            />
+          )}
+          {isSubmitted && isRobot && (
+            <Typography
+              sx={{ textAlign: 'left', fontSize: '1.2rem', color: '#d32f2f' }}
+            >
+              請進行驗證
+            </Typography>
+          )}
+        </Box>
+```
+
+- [ ] **Step 3: Run lint to verify**
+
+Run: `cd /Users/admin/Projects/Politics\ dashboard/politics-dashboard-2023 && yarn lint`
+Expected: No errors related to LoginForm.jsx
+
+- [ ] **Step 4: Commit**
+
+```bash
+git add src/containers/login/LoginForm.jsx
+git commit -m "feat: swap reCAPTCHA for FakeRecaptcha in demo mode"
+```
+
+---
+
+### Task 4: Mock Auth Handler — DEMO_ACCOUNTS
+
+**Files:**
+- Modify: `src/mocks/handlers/auth.js`
+
+- [ ] **Step 1: Update auth handler with DEMO_ACCOUNTS**
+
+Replace the full content of `src/mocks/handlers/auth.js`:
+```js
+import { rest } from 'msw'
+import { authAPI, baseUrl } from '@/apis'
+import { genToken, tokenValidation } from '../utils/token'
+
+const DEMO_ACCOUNTS = {
+  admin: { password: 'admin', dataset: 'default' },
+  'demo@dailyview.tw': { password: 'demo123', dataset: 'default' },
+}
+
+const authAPIs = [
+  rest.post(`${baseUrl}${authAPI.Url}`, async (req, res, ctx) => {
+    const { email, password } = await req.json()
+    const account = DEMO_ACCOUNTS[email]
+    if (!account || account.password !== password) {
+      return res(
+        ctx.status(401),
+        ctx.json({
+          detail: 'error',
+        }),
+      )
+    }
+    const accessToken = genToken(10000)
+    const refreshToken = genToken(2592000000)
+    return res(
+      ctx.status(200),
+      ctx.json({
+        refresh: refreshToken,
+        access: accessToken,
+      }),
+    )
+  }),
+  rest.post(`${baseUrl}${authAPI.tokenVerifyUrl}`, async (req, res, ctx) => {
+    const data = await req.json()
+    const { token } = data
+    const { success, message } = tokenValidation(token)
+    if (success === true) {
+      return res(
+        ctx.status(200),
+        ctx.json({ }),
+      )
+    }
+    return res(
+      ctx.status(401),
+      ctx.json({
+        detail: message,
+      }),
+    )
+  }),
+
+  rest.post(`${baseUrl}${authAPI.tokenRefreshUrl}`, async (req, res, ctx) => {
+    const data = await req.json()
+    const { refresh } = data
+    const { success, message } = tokenValidation(refresh)
+    if (success === true) {
+      const accessToken = genToken(10000)
+      return res(
+        ctx.status(200),
+        ctx.json({ access: accessToken }),
+      )
+    }
+    return res(
+      ctx.status(401),
+      ctx.json({
+        detail: message,
+      }),
+    )
+  }),
+]
+
+export default authAPIs
+```
+
+- [ ] **Step 2: Run tests to verify nothing broke**
+
+Run: `cd /Users/admin/Projects/Politics\ dashboard/politics-dashboard-2023 && yarn test --watchAll=false`
+Expected: All tests pass
+
+- [ ] **Step 3: Commit**
+
+```bash
+git add src/mocks/handlers/auth.js
+git commit -m "feat: add DEMO_ACCOUNTS mapping to mock auth handler"
+```
+
+---
+
+### Task 5: MSW Startup — Demo Mode + Subpath Service Worker
+
+**Files:**
+- Modify: `src/main.jsx`
+- Copy: `mockServiceWorker.js` → `public/mockServiceWorker.js`
+
+- [ ] **Step 1: Copy mockServiceWorker.js to public/**
+
+```bash
+cp "/Users/admin/Projects/Politics dashboard/politics-dashboard-2023/mockServiceWorker.js" \
+   "/Users/admin/Projects/Politics dashboard/politics-dashboard-2023/public/mockServiceWorker.js"
+```
+
+- [ ] **Step 2: Update main.jsx**
+
+Replace the full content of `src/main.jsx`:
+```jsx
+import React from 'react'
+import ReactDOM from 'react-dom/client'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
+import App from './App'
+import './index.scss'
+
+async function prepare() {
+  const shouldEnableMsw = process.env.VITE_DEMO_MODE === 'true' || !process.env.VITE_API_URL
+  if (shouldEnableMsw) {
+    const { worker } = await import('./mocks/browser')
+    const basePath = process.env.VITE_BASE_PATH || '/'
+    await worker.start({
+      serviceWorker: {
+        url: `${basePath}mockServiceWorker.js`,
+      },
+    })
+  }
+}
+
+prepare().then(() => {
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: {
+        retry: 1,
+        staleTime: 250000,
+      },
+    },
+  })
+  const root = document.getElementById('root')
+  ReactDOM.createRoot(root).render(
+    <React.StrictMode>
+      <QueryClientProvider client={queryClient}>
+        <App />
+        <ReactQueryDevtools initialIsOpen={false} />
+      </QueryClientProvider>
+    </React.StrictMode>,
+  )
+})
+```
+
+- [ ] **Step 3: Run tests**
+
+Run: `cd /Users/admin/Projects/Politics\ dashboard/politics-dashboard-2023 && yarn test --watchAll=false`
+Expected: All tests pass
+
+- [ ] **Step 4: Commit**
+
+```bash
+git add public/mockServiceWorker.js src/main.jsx
+git commit -m "feat: MSW startup supports demo mode and subpath service worker URL"
+```
+
+---
+
+### Task 6: Vite Config + Router Basename for Subpath
+
+**Files:**
+- Modify: `vite.config.js`
+- Modify: `src/routes/index.jsx`
+
+- [ ] **Step 1: Update vite.config.js**
+
+Replace the full content of `vite.config.js`:
+```js
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+import svgr from 'vite-plugin-svgr'
+import path from 'path'
+import EnvironmentPlugin from 'vite-plugin-environment'
+
+// https://vitejs.dev/config/
+export default defineConfig({
+  base: process.env.VITE_BASE_PATH || '/',
+  plugins: [react(), svgr(), EnvironmentPlugin('all')],
+  resolve: {
+    alias: [{
+      find: '@', replacement: path.resolve(__dirname, 'src'),
+    }],
+  },
+  build: {
+    assetsInlineLimit: 0,
+  },
+})
+```
+
+- [ ] **Step 2: Update routes/index.jsx with basename**
+
+Replace the full content of `src/routes/index.jsx`:
+```jsx
+import {
+  BrowserRouter, Route, Routes, Navigate,
+} from 'react-router-dom'
+import { DashboardLayout } from '@/layouts'
+import {
+  Reputation, Prediction, Demo, Favorability, Volume, Spread, Login, TextList, HotKeyword,
+} from '@/pages'
+
+import PrivateRoutes from './PrivateRoutes'
+
+const basename = process.env.VITE_BASE_PATH || '/'
+
+function Routers() {
+  return (
+    <BrowserRouter basename={basename}>
+      <Routes>
+        <Route element={<PrivateRoutes />}>
+          <Route path="/" element={<DashboardLayout />}>
+            <Route index element={<Navigate to="/prediction" replace />} />
+            <Route path="prediction" element={<Prediction />} />
+            <Route path="demo" element={<Demo />} />
+            <Route path="reputation">
+              <Route index element={<Reputation />} />
+              <Route path="spread" element={<Spread />} />
+              <Route path="volume" element={<Volume />} />
+              <Route path="favorability" element={<Favorability />} />
+              <Route path="textlist" element={<TextList />} />
+              <Route path="hotkeyword" element={<HotKeyword />} />
+            </Route>
+            <Route path="*" element={<Navigate to="/prediction" />} />
+          </Route>
+        </Route>
+        <Route path="login" element={<Login />} />
+      </Routes>
+    </BrowserRouter>
+  )
+}
+
+export default Routers
+```
+
+- [ ] **Step 3: Run tests**
+
+Run: `cd /Users/admin/Projects/Politics\ dashboard/politics-dashboard-2023 && yarn test --watchAll=false`
+Expected: All tests pass
+
+- [ ] **Step 4: Commit**
+
+```bash
+git add vite.config.js src/routes/index.jsx
+git commit -m "feat: dynamic base path and router basename for GitHub Pages subpath"
+```
+
+---
+
+### Task 7: GitHub Actions Workflow
+
+**Files:**
+- Create: `.github/workflows/deploy-demo.yml`
+
+- [ ] **Step 1: Create workflow directory**
+
+```bash
+mkdir -p "/Users/admin/Projects/Politics dashboard/politics-dashboard-2023/.github/workflows"
+```
+
+- [ ] **Step 2: Create deploy-demo.yml**
+
+Create `.github/workflows/deploy-demo.yml`:
+```yaml
+name: Deploy Demo to GitHub Pages
+
+on:
+  push:
+    branches:
+      - demo
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: yarn
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Build
+        env:
+          VITE_API_URL: ''
+          VITE_DEMO_MODE: 'true'
+          VITE_BASE_PATH: '/${{ github.event.repository.name }}/'
+        run: yarn build
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+```
+
+- [ ] **Step 3: Commit**
+
+```bash
+git add .github/workflows/deploy-demo.yml
+git commit -m "ci: add GitHub Actions workflow for demo deployment"
+```
+
+---
+
+### Task 8: Manual Verification
+
+- [ ] **Step 1: Start dev server in demo mode**
+
+```bash
+cd "/Users/admin/Projects/Politics dashboard/politics-dashboard-2023"
+VITE_DEMO_MODE=true VITE_API_URL= yarn dev
+```
+
+- [ ] **Step 2: Verify in browser**
+
+Open `http://localhost:5173/login` and check:
+1. Fake reCAPTCHA renders (grey box with「我不是機器人」)
+2. Click the checkbox — it turns green with a checkmark
+3. Enter `demo@dailyview.tw` / `demo123` → login succeeds → redirects to `/prediction`
+4. Enter `admin` / `admin` → also works (dev account preserved)
+5. Enter wrong credentials → shows error message
+6. Navigate through all pages (prediction, reputation, spread, etc.) — all load with mock data
+
+- [ ] **Step 3: Verify production build**
+
+```bash
+cd "/Users/admin/Projects/Politics dashboard/politics-dashboard-2023"
+VITE_DEMO_MODE=true VITE_API_URL= VITE_BASE_PATH=/test/ yarn build
+yarn preview --base /test/
+```
+
+Open `http://localhost:4173/test/login` and confirm the same flow works.
+
+- [ ] **Step 4: Verify normal mode is unaffected**
+
+```bash
+cd "/Users/admin/Projects/Politics dashboard/politics-dashboard-2023"
+yarn dev
+```
+
+Open `http://localhost:5173/login` and confirm real reCAPTCHA renders (may fail to load without valid key, but the component should attempt to render).
