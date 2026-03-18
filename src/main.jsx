@@ -6,9 +6,15 @@ import App from './App'
 import './index.scss'
 
 async function prepare() {
-  if (!process.env.VITE_API_URL) {
+  const shouldEnableMsw = process.env.VITE_DEMO_MODE === 'true' || !process.env.VITE_API_URL
+  if (shouldEnableMsw) {
     const { worker } = await import('./mocks/browser')
-    worker.start()
+    const basePath = process.env.VITE_BASE_PATH || '/'
+    await worker.start({
+      serviceWorker: {
+        url: `${basePath}mockServiceWorker.js`,
+      },
+    })
   }
 }
 
