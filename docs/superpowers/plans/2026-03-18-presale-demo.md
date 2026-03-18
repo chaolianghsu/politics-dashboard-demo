@@ -6,7 +6,7 @@
 
 **Architecture:** A single flag `VITE_DEMO_MODE=true` activates demo behavior: MSW intercepts all API calls, a fake reCAPTCHA replaces the real one, and a `DEMO_ACCOUNTS` map in the MSW auth handler controls login. `VITE_BASE_PATH` handles GitHub Pages subpath routing. No backend required.
 
-**Tech Stack:** React 18, Vite 4, MUI v5, MSW v1, React Router v6, React Hook Form, vite-plugin-environment
+**Tech Stack:** React 18, Vite 4, MUI v5, MSW v1, React Router v6, React Hook Form, vite-plugin-environment, Playwright
 
 **Spec:** `docs/superpowers/specs/2026-03-18-presale-demo-design.md`
 
@@ -30,7 +30,10 @@
 | `public/mockServiceWorker.js` | Copy | MSW service worker in Vite public dir |
 | `.env.example` | Modify | Document new env vars |
 | `.github/workflows/deploy-demo.yml` | Create | GitHub Pages auto-deploy on demo branch |
-| `.gitignore` | Modify | Add .superpowers/ |
+| `playwright.config.js` | Create | Playwright config with demo mode dev server |
+| `e2e/demo-login.spec.js` | Create | E2E test: demo login flow |
+| `e2e/demo-navigation.spec.js` | Create | E2E test: post-login page navigation |
+| `.gitignore` | Modify | Add .superpowers/, playwright-report/, test-results/ |
 
 ---
 
@@ -109,12 +112,16 @@ VITE_DEMO_MODE=
 VITE_BASE_PATH=
 ```
 
-- [ ] **Step 6: Add .superpowers/ to .gitignore**
+- [ ] **Step 6: Add .superpowers/ and playwright output to .gitignore**
 
 Append to `.gitignore`:
 ```
 # superpowers brainstorm files
 .superpowers/
+
+# playwright
+/playwright-report/
+/test-results/
 ```
 
 - [ ] **Step 7: Commit**
@@ -789,7 +796,203 @@ git commit -m "ci: add GitHub Actions workflow for demo deployment"
 
 ---
 
-### Task 8: Manual Verification
+### Task 8: Playwright E2E Tests
+
+**Files:**
+- Create: `playwright.config.js`
+- Create: `e2e/demo-login.spec.js`
+- Create: `e2e/demo-navigation.spec.js`
+- Modify: `package.json` (new scripts)
+- Modify: `.gitignore`
+
+- [ ] **Step 1: Install Playwright**
+
+```bash
+cd "/Users/admin/Projects/Politics dashboard/politics-dashboard-2023"
+yarn add -D @playwright/test
+npx playwright install chromium
+```
+
+- [ ] **Step 2: Create playwright.config.js**
+
+Create `playwright.config.js`:
+```js
+import { defineConfig } from '@playwright/test'
+
+export default defineConfig({
+  testDir: './e2e',
+  timeout: 30000,
+  retries: 0,
+  use: {
+    baseURL: 'http://localhost:5173',
+    headless: true,
+    screenshot: 'only-on-failure',
+  },
+  webServer: {
+    command: 'VITE_DEMO_MODE=true VITE_API_URL= yarn dev',
+    port: 5173,
+    reuseExistingServer: !process.env.CI,
+    timeout: 15000,
+  },
+  projects: [
+    { name: 'chromium', use: { browserName: 'chromium' } },
+  ],
+})
+```
+
+- [ ] **Step 3: Add E2E scripts to package.json**
+
+Add to `scripts` in `package.json`:
+```json
+"test:e2e": "playwright test",
+"test:e2e:headed": "playwright test --headed"
+```
+
+- [ ] **Step 4: RED — Write failing E2E test for demo login flow**
+
+Create `e2e/demo-login.spec.js`:
+```js
+import { test, expect } from '@playwright/test'
+
+test.describe('Demo Login Flow', () => {
+  test('shows fake reCAPTCHA on login page', async ({ page }) => {
+    await page.goto('/login')
+    await expect(page.getByText('我不是機器人')).toBeVisible()
+  })
+
+  test('login with demo account succeeds', async ({ page }) => {
+    await page.goto('/login')
+
+    // Fill credentials
+    await page.getByLabel('帳號').fill('demo@dailyview.tw')
+    await page.getByLabel('密碼').fill('demo123')
+
+    // Click fake reCAPTCHA
+    await page.getByText('我不是機器人').click()
+
+    // Submit
+    await page.getByRole('button', { name: '登入' }).click()
+
+    // Should redirect to /prediction
+    await expect(page).toHaveURL(/\/prediction/)
+  })
+
+  test('login with admin account still works', async ({ page }) => {
+    await page.goto('/login')
+
+    await page.getByLabel('帳號').fill('admin')
+    await page.getByLabel('密碼').fill('admin')
+    await page.getByText('我不是機器人').click()
+    await page.getByRole('button', { name: '登入' }).click()
+
+    await expect(page).toHaveURL(/\/prediction/)
+  })
+
+  test('login with wrong credentials shows error', async ({ page }) => {
+    await page.goto('/login')
+
+    await page.getByLabel('帳號').fill('wrong@test.com')
+    await page.getByLabel('密碼').fill('wrong')
+    await page.getByText('我不是機器人').click()
+    await page.getByRole('button', { name: '登入' }).click()
+
+    await expect(page.getByText('請確認帳號密碼是否正確')).toBeVisible()
+  })
+
+  test('submit without reCAPTCHA shows validation error', async ({ page }) => {
+    await page.goto('/login')
+
+    await page.getByLabel('帳號').fill('demo@dailyview.tw')
+    await page.getByLabel('密碼').fill('demo123')
+    await page.getByRole('button', { name: '登入' }).click()
+
+    await expect(page.getByText('請進行驗證')).toBeVisible()
+  })
+})
+```
+
+- [ ] **Step 5: Write E2E test for post-login navigation**
+
+Create `e2e/demo-navigation.spec.js`:
+```js
+import { test, expect } from '@playwright/test'
+
+// Login helper — reuse across navigation tests
+async function loginAsDemo(page) {
+  await page.goto('/login')
+  await page.getByLabel('帳號').fill('demo@dailyview.tw')
+  await page.getByLabel('密碼').fill('demo123')
+  await page.getByText('我不是機器人').click()
+  await page.getByRole('button', { name: '登入' }).click()
+  await expect(page).toHaveURL(/\/prediction/)
+}
+
+test.describe('Demo Navigation — post-login pages', () => {
+  test.beforeEach(async ({ page }) => {
+    await loginAsDemo(page)
+  })
+
+  test('prediction page loads with mock data', async ({ page }) => {
+    await expect(page).toHaveURL(/\/prediction/)
+    // Page should have rendered content (not blank)
+    await expect(page.locator('body')).not.toBeEmpty()
+  })
+
+  test('can navigate to reputation page', async ({ page }) => {
+    await page.goto('/reputation')
+    await expect(page).toHaveURL(/\/reputation/)
+    await expect(page.locator('body')).not.toBeEmpty()
+  })
+
+  test('can navigate to reputation/spread', async ({ page }) => {
+    await page.goto('/reputation/spread')
+    await expect(page).toHaveURL(/\/reputation\/spread/)
+  })
+
+  test('can navigate to reputation/volume', async ({ page }) => {
+    await page.goto('/reputation/volume')
+    await expect(page).toHaveURL(/\/reputation\/volume/)
+  })
+
+  test('can navigate to reputation/favorability', async ({ page }) => {
+    await page.goto('/reputation/favorability')
+    await expect(page).toHaveURL(/\/reputation\/favorability/)
+  })
+
+  test('can navigate to reputation/hotkeyword', async ({ page }) => {
+    await page.goto('/reputation/hotkeyword')
+    await expect(page).toHaveURL(/\/reputation\/hotkeyword/)
+  })
+
+  test('unauthenticated access redirects to login', async ({ page }) => {
+    // Clear tokens
+    await page.evaluate(() => {
+      localStorage.removeItem('politics_access')
+      localStorage.removeItem('politics_refresh')
+    })
+    await page.goto('/prediction')
+    await expect(page).toHaveURL(/\/login/)
+  })
+})
+```
+
+- [ ] **Step 6: Run E2E tests — verify GREEN**
+
+Run: `yarn test:e2e`
+Expected: All tests pass. If any fail, fix the implementation and re-run.
+
+- [ ] **Step 7: Commit**
+
+```bash
+git add playwright.config.js e2e/ package.json .gitignore
+git commit -m "test: add Playwright E2E tests for demo login and navigation"
+```
+
+---
+
+### Task 9: Manual Verification (Smoke Test)
+
+E2E tests cover the core flows automatically. This task is a final smoke test for visual confirmation.
 
 - [ ] **Step 1: Start dev server in demo mode**
 
