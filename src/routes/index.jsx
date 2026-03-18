@@ -8,9 +8,11 @@ import {
 
 import PrivateRoutes from './PrivateRoutes'
 
+const basename = process.env.VITE_BASE_PATH || '/'
+
 function Routers() {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename={basename}>
       <Routes>
         <Route element={<PrivateRoutes />}>
           <Route path="/" element={<DashboardLayout />}>
