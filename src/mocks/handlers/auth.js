@@ -19,7 +19,7 @@ const authAPIs = [
         }),
       )
     }
-    const accessToken = genToken(10000)
+    const accessToken = genToken(3600000)
     const refreshToken = genToken(2592000000)
     return res(
       ctx.status(200),
@@ -52,7 +52,7 @@ const authAPIs = [
     const { refresh } = data
     const { success, message } = tokenValidation(refresh)
     if (success === true) {
-      const accessToken = genToken(10000)
+      const accessToken = genToken(3600000)
       return res(
         ctx.status(200),
         ctx.json({ access: accessToken }),

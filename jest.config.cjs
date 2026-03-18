@@ -8,6 +8,7 @@ module.exports = {
     '!**/node_modules/**',
     '!<rootDir>/out/**',
     '!<rootDir>/*.config.js',
+    '!<rootDir>/e2e/**',
     '!<rootDir>/coverage/**',
   ],
   moduleNameMapper: {
@@ -18,7 +19,7 @@ module.exports = {
     '^.+\\.svg$': '<rootDir>/src/mocks/svgrMock.js',
     '^@/(.*)': '<rootDir>/src/$1',
   },
-  testPathIgnorePatterns: ['<rootDir>/node_modules/', '<rootDir>/.next/'],
+  testPathIgnorePatterns: ['<rootDir>/node_modules/', '<rootDir>/.next/', '<rootDir>/e2e/'],
   testEnvironment: 'jsdom',
   transform: {
     '^.+\\.(js|jsx|ts|tsx)$': [

@@ -10,7 +10,9 @@
     "test": "jest --watchAll",
     "lint": "eslint --ext .js,.jsx,.ts,.tsx --ignore-path .gitignore --fix src",
     "prepare": "husky install",
-    "pre-commit": "yarn lint-staged"
+    "pre-commit": "yarn lint-staged",
+    "test:e2e": "playwright test",
+    "test:e2e:headed": "playwright test --headed"
   },
   "dependencies": {
     "@emotion/react": "^11.10.5",
@@ -45,6 +47,7 @@
     "@babel/preset-react": "^7.18.6",
     "@commitlint/cli": "^17.0.3",
     "@commitlint/config-conventional": "^17.0.3",
+    "@playwright/test": "^1.58.2",
     "@testing-library/dom": "^8.16.0",
     "@testing-library/jest-dom": "^5.16.4",
     "@testing-library/react": "^13.3.0",
