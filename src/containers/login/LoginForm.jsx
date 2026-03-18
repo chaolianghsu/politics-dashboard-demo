@@ -10,6 +10,8 @@ import { useMutation } from '@tanstack/react-query'
 import { axiosInstance } from '@/apis'
 import { getToken } from '@/apis/source/auth'
 import LogoLoginImg from '@/assets/logo-login.png'
+import { isDemoMode } from '@/utils/isDemoMode'
+import FakeRecaptcha from '@/components/FakeRecaptcha'
 
 function LoginForm() {
   const [isRobot, setIsRobot] = useState(true)
@@ -94,12 +96,16 @@ function LoginForm() {
           {...register('password', { required: '請輸入密碼' })}
         />
         <Box sx={{ '&>div': { width: '100%' } }}>
-          <ReCAPTCHA
-            onChange={handleOnRecaptchChange}
-            ref={recaptchaRef}
-            sitekey="6LcP1KckAAAAADlDotybpQJI2Ouzp8uj1jMffpS3"
-            hl="zh-TW"
-          />
+          {isDemoMode ? (
+            <FakeRecaptcha onChange={handleOnRecaptchChange} />
+          ) : (
+            <ReCAPTCHA
+              onChange={handleOnRecaptchChange}
+              ref={recaptchaRef}
+              sitekey="6LcP1KckAAAAADlDotybpQJI2Ouzp8uj1jMffpS3"
+              hl="zh-TW"
+            />
+          )}
           {isSubmitted && isRobot && (
             <Typography
               sx={{ textAlign: 'left', fontSize: '1.2rem', color: '#d32f2f' }}
