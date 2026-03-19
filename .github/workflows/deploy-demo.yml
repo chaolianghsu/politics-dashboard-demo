@@ -39,6 +39,9 @@ jobs:
           VITE_BASE_PATH: '/${{ github.event.repository.name }}/'
         run: yarn build
 
+      - name: SPA routing fix
+        run: cp dist/index.html dist/404.html
+
       - name: Setup Pages
         uses: actions/configure-pages@v4
 
